@@ -7,7 +7,7 @@
 
 :root{--forest:#2d3f38;--sage:#7a9485;--sage-light:#e8ede9;--sage-mid:#b5c9be;--sage-dark:#4a6b58;--radius:12px;--radius-sm:8px;--warn-bg:#fdf5e8;--warn-border:#e8c97a;--warn-text:#7a5a1a;--danger-bg:#fdf0ee;--danger-border:#e8a89a;--danger-text:#7a2a1a;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'DM Sans',sans-serif;background-color:#fff;--bg-img:url('assets/bg-embed.png');color:#1a1a1a;min-height:100vh;display:flex;justify-content:center;padding:2rem 1.25rem 4rem;}
+body{font-family:'DM Sans',sans-serif;background-color:#fff;--bg-img:url('../assets/bg-embed.png');color:#1a1a1a;min-height:100vh;display:flex;justify-content:center;padding:2rem 1.25rem 4rem;}
 .app{max-width:620px;width:100%;position:relative;}
 .screen{display:none;}.screen.active{display:block;background:#ffffff;min-height:100vh;position:relative;}.results-page{position:relative;z-index:1;max-width:800px;margin:0 auto;padding:6rem 2rem 2rem;}#s-cash .results-page{max-width:1100px;}
 .results-footer{display:flex;justify-content:space-between;align-items:flex-start;padding-top:1.5rem;padding-bottom:1.5rem;border-top:1px solid #e5e7eb;margin-top:2rem;flex-wrap:wrap;gap:1rem;}
@@ -325,7 +325,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
 
 /* GOALS SCREEN DARK REDESIGN */
 #s-goals{display:none;}#s-goals.active{display:flex;flex-direction:column;position:fixed;top:0;left:0;width:100%;height:100%;background-color:#ffffff;overflow-y:auto;z-index:100;}
-#s-goals::before,#s-cash::before,#s-grow::before,#s-exit::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("assets/bg-pattern-green.png");background-repeat:repeat;background-size:500px auto;opacity:0.12;pointer-events:none;z-index:0;}
+#s-goals::before,#s-cash::before,#s-grow::before,#s-exit::before{content:"";position:fixed;top:0;left:0;right:0;bottom:0;background-image:url("../assets/bg-pattern-green.png");background-repeat:repeat;background-size:500px auto;opacity:0.12;pointer-events:none;z-index:0;}
 .goals-page{position:relative;z-index:1;width:100%;display:flex;flex-direction:column;flex:1;min-height:100%;}
 .goals-inner{max-width:1100px;margin:0 auto;width:100%;padding:5rem 2rem 2rem;display:flex;flex-direction:column;flex:1;min-height:100vh;}
 .goals-content{flex:1;display:flex;flex-direction:column;justify-content:center;gap:0;}

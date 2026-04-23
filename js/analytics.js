@@ -9,7 +9,7 @@
 // 2. Replace 'G-XXXXXXXXXX' with your Measurement ID
 const GA_ID = 'G-XXXXXXXXXX';
 
-(function loadGA() {
+try { (function loadGA() {
   const s = document.createElement('script');
   s.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
   s.async = true;
@@ -18,18 +18,18 @@ const GA_ID = 'G-XXXXXXXXXX';
   window.gtag = function () { dataLayer.push(arguments); };
   gtag('js', new Date());
   gtag('config', GA_ID);
-})();
+})(); } catch(e) { console.warn('GA load skipped:', e); };
 
 // ── Microsoft Clarity ────────────────────────────────────────
 // 1. Go to clarity.microsoft.com → New Project
 // 2. Replace 'XXXXXXXXXX' with your Clarity Project ID
 const CLARITY_ID = 'XXXXXXXXXX';
 
-(function loadClarity(c, l, a, r, i, t, y) {
+try { (function loadClarity(c, l, a, r, i, t, y) {
   c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
   t = l.createElement(r); t.async = 1; t.src = 'https://www.clarity.ms/tag/' + i;
   y = l.getElementsByTagName(r)[0]; y.parentNode.insertBefore(t, y);
-})(window, document, 'clarity', 'script', CLARITY_ID);
+})(window, document, 'clarity', 'script', CLARITY_ID); } catch(e) { console.warn('Clarity load skipped:', e); }
 
 // ── Event Helpers ────────────────────────────────────────────
 // Call these from app.js at key interaction points.
