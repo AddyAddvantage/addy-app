@@ -210,7 +210,6 @@ function updateSliderTicks(sliderId,tickVals){
 }
 
 // [extracted to logic.js: calcCash]
-}
 function renderCashActions(){
   document.getElementById('c-ac').innerHTML=acts([
     {t:'Send payment reminders before invoices are due.',s:'A reminder 7 days before the due date can speed up payments.'},
@@ -274,7 +273,6 @@ function growStartOver(){
 }
 
 // [extracted to logic.js: calcGrow]
-}
 function renderGrowActions(){
   document.getElementById('g-ac').innerHTML=acts([
     {t:'Try a small price increase on your next few jobs.',s:'Even a small increase can make a bigger difference than taking on more work.'},
@@ -338,7 +336,6 @@ function exitStartOver(){
 }
 
 // [extracted to logic.js: calcExit]
-}
 function showExitActions(){
   var btn=document.getElementById('e-ac-btn');
   var thinking=document.getElementById('e-ac-thinking');
