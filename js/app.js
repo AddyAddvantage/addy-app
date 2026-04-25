@@ -4,6 +4,19 @@
    Requires: logic.js loaded before this file.
    ========================================================== */
 
+const WORKER_URL = 'https://addy-calculator.michelle-1db.workers.dev';
+
+async function api(goal, inputs) {
+  const res = await fetch(WORKER_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ goal, inputs }),
+  });
+  if (!res.ok) throw new Error('API error ' + res.status);
+  const data = await res.json();
+  return data.result;
+}
+
 let goal=null;
 
 // [extracted to logic.js: f]
@@ -209,7 +222,20 @@ function updateSliderTicks(sliderId,tickVals){
   spans.forEach(function(sp,i){sp.classList.toggle('sl-active',tickVals[i]!==undefined&&val===tickVals[i]);});
 }
 
-// [extracted to logic.js: calcCash]
+async function calcCash(){
+  const rev=parseFloat(document.getElementById('c-rev').value)||0;
+  const dso=parseFloat(document.getElementById('c-dso').value)||0;
+  const tgt=parseFloat(document.getElementById('c-sl').value)||30;
+  const r=await api('cash',{rev,dso,tgt});
+  document.getElementById('c-td').textContent=Math.round(r.tgt)+' days';
+  updateSliderTicks('c-sl',[0,30,60,90]);
+  document.getElementById('cash-ins').innerHTML=`<div class="ib ${r.danger?'danger':'sage'}"><div class="irow"><div class="ival">${f(r.trapped)}</div><div class="ilbl">you've earned... but can't use. This is why your cash feels tight.</div></div></div>`;
+  document.getElementById('c-fr').textContent=f(Math.abs(r.freed));
+  document.getElementById('c-fr').className='rv '+(r.freed>=0?'c-sage':'c-danger');
+  document.getElementById('c-fn').textContent=r.tgtLessThanDso?'back in your bank account':'still not in your bank account';
+  document.getElementById('c-fn').className='rn '+(r.tgtLessThanDso?'c-sage':'c-danger');
+  var cAcEl=document.getElementById('c-ac');if(cAcEl&&!cAcEl._shown){cAcEl.innerHTML='';}
+}
 function renderCashActions(){
   document.getElementById('c-ac').innerHTML=acts([
     {t:'Send payment reminders before invoices are due.',s:'A reminder 7 days before the due date can speed up payments.'},
@@ -272,7 +298,26 @@ function growStartOver(){
   setTimeout(function(){var el=document.getElementById('g-nc');if(el)el.focus();},300);
 }
 
-// [extracted to logic.js: calcGrow]
+async function calcGrow(){
+  const c=parseInt(document.getElementById('g-nc').value)||12;
+  const p=parseFloat(document.getElementById('g-ap').value)||850;
+  const pi=parseInt(document.getElementById('g-pi').value)||0;
+  const ni=parseInt(document.getElementById('g-ni').value)||0;
+  document.getElementById('g-pd').textContent=pi+'%';
+  document.getElementById('g-cd').textContent=ni;
+  updateSliderTicks('g-ni',[0,10,20,30]);
+  const r=await api('grow',{c,p,pi,ni});
+  document.getElementById('grow-ins').innerHTML=`<div class="ib ${r.lo?'warn':'forest'}"><div class="irow" style="align-items:flex-end;"><div style="display:flex;flex-direction:column;"><div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Current</div><div class="ival">${f(r.cur)}</div></div><div class="ilbl" style="margin-top:0;padding-bottom:12px;">per year from ${c} jobs at ${f(p)} each.</div></div></div>`;
+  document.getElementById('g-nr').textContent=f(r.nw);
+  document.getElementById('g-ns').textContent=(r.gp+r.gc)>0?`+${f(r.gp+r.gc)} per year`:'adjust levers above';
+  document.getElementById('g-gp').textContent=f(r.gp);
+  var gpWrap=document.getElementById('g-gp-wrap');
+  if(gpWrap){var leftPct=(pi/50)*100;var cw=gpWrap.parentElement.offsetWidth||300;var lw=gpWrap.offsetWidth||140;var leftPx=(leftPct/100)*cw;var clampedPx=Math.max(lw/2,Math.min(leftPx,cw-lw/2));gpWrap.style.left=(clampedPx/cw*100)+'%';}
+  document.getElementById('g-gc').textContent=f(r.gc);
+  var gcWrap=document.getElementById('g-gc-wrap');
+  if(gcWrap){var leftPct2=(ni/30)*100;var cw2=gcWrap.parentElement.offsetWidth||300;var lw2=gcWrap.offsetWidth||140;var leftPx2=(leftPct2/100)*cw2;var clampedPx2=Math.max(lw2/2,Math.min(leftPx2,cw2-lw2/2));gcWrap.style.left=(clampedPx2/cw2*100)+'%';}
+  var gAcEl=document.getElementById('g-ac');if(gAcEl&&!gAcEl._shown){gAcEl.innerHTML='';}
+}
 function renderGrowActions(){
   document.getElementById('g-ac').innerHTML=acts([
     {t:'Try a small price increase on your next few jobs.',s:'Even a small increase can make a bigger difference than taking on more work.'},
@@ -335,7 +380,23 @@ function exitStartOver(){
   setTimeout(function(){var el=document.getElementById('e-pro');if(el)el.focus();},300);
 }
 
-// [extracted to logic.js: calcExit]
+async function calcExit(){
+  const profit=parseFloat(document.getElementById('e-pro').value)||500000;
+  const years=parseInt(document.getElementById('e-yr').value)||8;
+  const dep=document.getElementById('e-dep').value;
+  const pi=parseInt(document.getElementById('e-pi').value)||0;
+  const di=parseInt(document.getElementById('e-di').value)||1;
+  document.getElementById('e-pd').textContent=pi+'%';
+  const r=await api('exit',{profit,years,dep,pi,di});
+  document.getElementById('exit-ins').innerHTML=`<div class="ib ${r.isDanger?'danger':'sage'}"><div class="irow"><div class="ival">${f(r.curVal)}</div><div class="ilbl">Estimated current value.</div></div></div>`;
+  document.getElementById('e-nv').textContent=f(r.newVal);
+  document.getElementById('e-ns').textContent=`+${f(r.uplift)} uplift`;
+  let bd='';
+  if(pi===0&&di===1)bd='Adjust the sliders to see how improving profitability and reducing owner dependency impacts what a buyer would pay.';
+  else if(pi>0&&di===1)bd=`A ${pi}% profit improvement adds ${f(r.profitNew-profit)}/year and increases your valuation by ${f(r.uplift)}. Every dollar of extra profit is worth ${r.newMult.toFixed(1)} dollars in exit value.`;
+  else if(pi===0)bd=`Reducing owner dependency moves your multiple from ${r.currentMult.toFixed(1)}x to ${r.newMult.toFixed(1)}x. Buyers pay more for businesses that run without the owner.`;
+  document.getElementById('e-rd').innerHTML=r.checks.map(ch=>`<div class="ritem"><div class="rdot" style="background:${ch.ok?'#7a9485':'#c0392b'};"></div><div class="rtxt">${ch.l}</div><div class="rs" style="color:${ch.ok?'#4a6b58':'#7a2a1a'};">${ch.ok?'Good':'This is holding your value back'}</div></div>`).join('');
+}
 function showExitActions(){
   var btn=document.getElementById('e-ac-btn');
   var thinking=document.getElementById('e-ac-thinking');
