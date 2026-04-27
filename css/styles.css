@@ -335,7 +335,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
 .goals-right{display:flex;flex-direction:column;gap:1.5rem;grid-column:2/4;}
 
 /* ADDY MASCOT */
-.mascot-wrap{position:relative;display:inline-block;line-height:0;overflow:hidden;}
+.mascot-wrap{position:relative;display:inline-block;line-height:0;-webkit-mask-image:radial-gradient(circle at 50% 52%,black 38%,rgba(0,0,0,0.7) 54%,transparent 72%);mask-image:radial-gradient(circle at 50% 52%,black 38%,rgba(0,0,0,0.7) 54%,transparent 72%);}
 .goals-mascot{width:83%;height:auto;object-fit:contain;display:block;mix-blend-mode:multiply;margin:0px -28% -35px -5%;}
 
 .goals-hero-text{display:flex;flex-direction:column;gap:1rem;}
