@@ -335,8 +335,8 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
 .goals-right{display:flex;flex-direction:column;gap:1.5rem;grid-column:2/4;}
 
 /* ADDY MASCOT */
-.mascot-wrap{position:relative;display:inline-block;line-height:0;-webkit-mask-image:radial-gradient(circle at 50% 52%,black 38%,rgba(0,0,0,0.7) 54%,transparent 72%);mask-image:radial-gradient(circle at 50% 52%,black 38%,rgba(0,0,0,0.7) 54%,transparent 72%);}
-.goals-mascot{width:83%;height:auto;object-fit:contain;display:block;mix-blend-mode:multiply;margin:0px -28% -35px -5%;}
+.mascot-wrap{position:relative;display:inline-block;line-height:0;width:300px;height:300px;border-radius:50%;overflow:hidden;background:var(--sage-light);}
+.goals-mascot{width:160%;height:160%;object-fit:cover;display:block;mix-blend-mode:multiply;margin:-25% 0 0 -30%;}
 
 .goals-hero-text{display:flex;flex-direction:column;gap:1rem;}
 .goals-eyebrow{display:inline-block;align-self:flex-start;font-size:11px;font-weight:600;color:var(--sage-dark);letter-spacing:0.15em;text-transform:uppercase;background:var(--sage-light);border:1px solid var(--sage-mid);border-radius:20px;padding:5px 14px;}
@@ -371,7 +371,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
 /* GOALS — STANDARD DESKTOP (1024px–1199px) */
 @media(max-width:1199px) and (min-width:1024px){
   .goals-heading{font-size:44px;}
-  .goals-mascot{width:900px;margin:0px -220px -90px -220px;}
+  .mascot-wrap{width:300px;height:300px;}
 }
 
 /* GOALS — TABLET LANDSCAPE (768px–1023px) */
@@ -379,7 +379,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
   .goals-inner{padding:2rem 1.5rem 1.5rem;}
   .goals-hero{grid-template-columns:1fr 1fr;gap:1.5rem;}
   .goals-hero-text{grid-column:2/3;}
-  .goals-mascot{width:560px;margin:0px -120px -60px -120px;}
+  .mascot-wrap{width:260px;height:260px;}
   .goals-heading{font-size:36px;}
   .goals-sub{font-size:14px;max-width:100%;}
   .goals-cards{grid-template-columns:repeat(3,1fr);}
@@ -395,8 +395,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
   .goals-right{gap:1rem;}
   .goals-heading-row{flex-direction:column;gap:0.5rem;align-self:center;}
   .goals-hero-text{align-items:center;text-align:center;}
-  .mascot-wrap{margin:0 auto;}
-  .goals-mascot{width:300px;margin:0px -40px -50px -40px;}
+  .mascot-wrap{width:220px;height:220px;margin:0 auto;}
   .goals-heading{font-size:32px;}
   .goals-sub{font-size:13px;max-width:100%;text-align:center;}
   .goals-eyebrow{font-size:10px;}
@@ -413,7 +412,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
 /* GOALS — SMALL MOBILE (max 480px) */
 @media(max-width:480px){
   .goals-inner{padding:1rem 0.75rem 1rem;}
-  .goals-mascot{width:240px;margin:0px -20px -40px -20px;}
+  .mascot-wrap{width:180px;height:180px;}
   .goals-heading{font-size:26px;}
   .goals-opt-card{padding:1rem;}
   .goals-opt-title{font-size:15px;}
@@ -423,7 +422,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
 /* GOALS — EXTRA SMALL (max 360px) */
 @media(max-width:360px){
   .goals-heading{font-size:22px;}
-  .goals-mascot{width:200px;margin:0 auto -30px auto;}
+  .mascot-wrap{width:160px;height:160px;}
 }
 /* ==================== RESPONSIVE: RESULT SCREENS ==================== */
 
