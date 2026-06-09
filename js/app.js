@@ -175,7 +175,18 @@ function cashStartOver(){
   cashFieldFocus('c-dso','c-dso-err');
   var t=document.getElementById('cash-thinking');if(t){t.style.display='none';t.classList.remove('visible');}
   var overlay=document.getElementById('card-thinking-overlay');if(overlay){overlay.classList.remove('visible');}
-  var cardInner=document.getElementById('cash-card-inner');if(cardInner)cardInner.style.display='';
+  var cardInner=document.getElementById('cash-card-inner');
+  var sum=document.getElementById('cash-input-summary');
+  var chat2=document.getElementById('v2-cash-chat-2');if(chat2)chat2.remove();
+  if(sum&&sum.classList.contains('vis')){
+    sum.classList.remove('vis');
+    setTimeout(function(){
+      sum.style.display='none';
+      if(cardInner){cardInner.style.opacity='0';cardInner.style.display='';requestAnimationFrame(function(){requestAnimationFrame(function(){cardInner.style.opacity='1';});});}
+    },350);
+  } else {
+    if(cardInner){cardInner.style.display='';cardInner.style.opacity='1';}
+  }
   var doneDot=document.querySelector('#s-cash .dot.done:last-child');if(doneDot){doneDot.classList.remove('done');doneDot.classList.add('active');}
   var p2=document.getElementById('cash-phase2');if(p2)p2.classList.remove('visible');
   var p3=document.getElementById('cash-phase3');if(p3)p3.classList.remove('visible');
@@ -198,16 +209,24 @@ function startCash(){
   var p3=document.getElementById('cash-phase3');
   if(p2)p2.classList.remove('visible');
   if(p3)p3.classList.remove('visible');
-  // swap form for thinking overlay inside the card
   if(cardInner)cardInner.style.display='none';
   if(fill){fill.style.animation='none';fill.offsetHeight;fill.style.animation='';}
   if(overlay)overlay.classList.add('visible');
   calcCash();
   setTimeout(function(){
     if(overlay){overlay.classList.remove('visible');overlay.style.display='';}
-    if(cardInner)cardInner.style.display='';
+    var sum=document.getElementById('cash-input-summary');
+    var revV=document.getElementById('c-rev').value;
+    var dsoV=document.getElementById('c-dso').value;
+    if(sum&&revV){
+      var sr=document.getElementById('c-sum-rev');
+      var sd=document.getElementById('c-sum-dso');
+      if(sr)sr.textContent='$'+parseFloat(revV).toLocaleString();
+      if(sd)sd.innerHTML='Currently <span class="sum-num">'+dsoV+'</span> days to get paid';
+      sum.style.display='flex';
+      requestAnimationFrame(function(){requestAnimationFrame(function(){sum.classList.add('vis');});});
+    }
     if(p2)p2.classList.add('visible');
-    if(p3)p3.classList.add('visible');
     var activeDot=document.querySelector('#s-cash .dot.active');
     if(activeDot){activeDot.classList.remove('active');activeDot.classList.add('done');}
   },4000);
@@ -234,6 +253,13 @@ async function calcCash(){
   document.getElementById('c-fr').className='rv '+(r.freed>=0?'c-sage':'c-danger');
   document.getElementById('c-fn').textContent=r.tgtLessThanDso?'back in your bank account':'still not in your bank account';
   document.getElementById('c-fn').className='rn '+(r.tgtLessThanDso?'c-sage':'c-danger');
+  var fr=document.getElementById('c-fr');
+  var fn=document.getElementById('c-fn');
+  var isGood=r.tgtLessThanDso;
+  if(fr)fr.style.color=isGood?'#4a6b58':'#ffffff';
+  if(fn)fn.style.color=isGood?'#4a6b58':'#ffffff';
+  var rb=fr?fr.closest('.rb'):null;
+  if(rb){rb.style.background=isGood?'':'#7b1a1a';rb.style.border=isGood?'':'1px solid #5c1111';rb.style.color=isGood?'':'#ffffff';}
   var cAcEl=document.getElementById('c-ac');if(cAcEl&&!cAcEl._shown){cAcEl.innerHTML='';}
 }
 function renderCashActions(){
@@ -275,7 +301,18 @@ function startGrow(){
   calcGrow();
   setTimeout(function(){
     if(overlay){overlay.classList.remove('visible');overlay.style.display='';}
-    if(cardInner)cardInner.style.display='';
+    if(cardInner)cardInner.style.display='none';
+    var sum=document.getElementById('grow-input-summary');
+    var ncV=document.getElementById('g-nc').value;
+    var apV=document.getElementById('g-ap').value;
+    if(sum&&ncV){
+      var sNc=document.getElementById('g-sum-nc');
+      var sAp=document.getElementById('g-sum-ap');
+      if(sNc)sNc.textContent=ncV+' clients';
+      if(sAp)sAp.textContent='$'+parseFloat(apV).toLocaleString()+' avg job';
+      sum.style.display='flex';
+      requestAnimationFrame(function(){requestAnimationFrame(function(){sum.classList.add('vis');});});
+    }
     if(p2)p2.classList.add('visible');
     window.scrollTo({top:0,behavior:'smooth'});
   },4000);
@@ -286,6 +323,8 @@ function growStartOver(){
   var p2=document.getElementById('grow-phase2');
   if(overlay){overlay.classList.remove('visible');overlay.style.display='';}
   if(cardInner)cardInner.style.display='';
+  var sum=document.getElementById('grow-input-summary');
+  if(sum){sum.classList.remove('vis');sum.style.display='none';}
   if(p2)p2.classList.remove('visible');
   document.getElementById('g-nc').value='';
   document.getElementById('g-ap').value='';
@@ -354,13 +393,21 @@ function startExit(){
   if(cardInner)cardInner.style.display='none';
   if(fill){fill.style.animation='none';fill.offsetHeight;fill.style.animation='';}
   if(overlay)overlay.classList.add('visible');
-  var acWasShown=document.getElementById('e-ac').innerHTML.trim()!=='';
   calcExit();
   setTimeout(function(){
     if(overlay){overlay.classList.remove('visible');overlay.style.display='';}
-    if(cardInner)cardInner.style.display='';
+    var sum=document.getElementById('exit-input-summary');
+    var proV=document.getElementById('e-pro').value;
+    var yrV=document.getElementById('e-yr').value;
+    if(sum&&proV){
+      var sPro=document.getElementById('e-sum-pro');
+      var sYr=document.getElementById('e-sum-yr');
+      if(sPro)sPro.textContent='$'+parseFloat(proV).toLocaleString()+' profit';
+      if(sYr)sYr.textContent=yrV+' yrs trading';
+      sum.style.display='flex';
+      requestAnimationFrame(function(){requestAnimationFrame(function(){sum.classList.add('vis');});});
+    }
     if(p2)p2.classList.add('visible');
-    if(acWasShown){renderExitActions();}else{document.getElementById('e-ac').innerHTML='';}
     window.scrollTo({top:0,behavior:'smooth'});
   },4000);
 }
@@ -368,12 +415,16 @@ function exitStartOver(){
   var overlay=document.getElementById('exit-thinking-overlay');
   var cardInner=document.getElementById('exit-card-inner');
   var p2=document.getElementById('exit-phase2');
+  var sum=document.getElementById('exit-input-summary');
   if(overlay){overlay.classList.remove('visible');overlay.style.display='';}
+  if(sum){sum.classList.remove('vis');sum.style.display='none';}
   if(cardInner)cardInner.style.display='';
   if(p2)p2.classList.remove('visible');
   document.getElementById('e-pro').value='';
   document.getElementById('e-yr').value='';
-  document.getElementById('e-ac').innerHTML='';
+  var eAcEl=document.getElementById('e-ac');if(eAcEl){eAcEl.innerHTML='';eAcEl._shown=false;}
+  var eAcBtn=document.getElementById('e-ac-btn');if(eAcBtn)eAcBtn.style.display='';
+  var eAcThink=document.getElementById('e-ac-thinking');if(eAcThink)eAcThink.style.display='none';
   cashFieldFocus('e-pro','e-pro-err');
   cashFieldFocus('e-yr','e-yr-err');
   window.scrollTo({top:0,behavior:'smooth'});
@@ -385,16 +436,14 @@ async function calcExit(){
   const years=parseInt(document.getElementById('e-yr').value)||8;
   const dep=document.getElementById('e-dep').value;
   const pi=parseInt(document.getElementById('e-pi').value)||0;
-  const di=parseInt(document.getElementById('e-di').value)||1;
-  document.getElementById('e-pd').textContent=pi+'%';
-  const r=await api('exit',{profit,years,dep,pi,di});
+  var eDiEl=document.getElementById('e-di');
+  const di=eDiEl?parseInt(eDiEl.value):-1;
+  var ePd=document.getElementById('e-pd'); if(ePd) ePd.textContent=pi+'%';
+  const nothingSelected=(di<0&&pi===0);
+  const r=await api('exit',{profit,years,dep,pi,di,nothingSelected});
   document.getElementById('exit-ins').innerHTML=`<div class="ib ${r.isDanger?'danger':'sage'}"><div class="irow"><div class="ival">${f(r.curVal)}</div><div class="ilbl">Estimated current value.</div></div></div>`;
   document.getElementById('e-nv').textContent=f(r.newVal);
-  document.getElementById('e-ns').textContent=`+${f(r.uplift)} uplift`;
-  let bd='';
-  if(pi===0&&di===1)bd='Adjust the sliders to see how improving profitability and reducing owner dependency impacts what a buyer would pay.';
-  else if(pi>0&&di===1)bd=`A ${pi}% profit improvement adds ${f(r.profitNew-profit)}/year and increases your valuation by ${f(r.uplift)}. Every dollar of extra profit is worth ${r.newMult.toFixed(1)} dollars in exit value.`;
-  else if(pi===0)bd=`Reducing owner dependency moves your multiple from ${r.currentMult.toFixed(1)}x to ${r.newMult.toFixed(1)}x. Buyers pay more for businesses that run without the owner.`;
+  document.getElementById('e-ns').textContent=nothingSelected?'select an option above':'+'+f(r.uplift)+' uplift';
   document.getElementById('e-rd').innerHTML=r.checks.map(ch=>`<div class="ritem"><div class="rdot" style="background:${ch.ok?'#7a9485':'#c0392b'};"></div><div class="rtxt">${ch.l}</div><div class="rs" style="color:${ch.ok?'#4a6b58':'#7a2a1a'};">${ch.ok?'Good':'This is holding your value back'}</div></div>`).join('');
 }
 function showExitActions(){
@@ -438,3 +487,587 @@ function renderExitActions(){
   document.getElementById('e-ac').innerHTML=acts(exitActs);
 }
 calcCash();calcGrow();calcExit();
+
+/* ============================================================
+   ADDY v2 OVERLAY — conversational chat, chips, render fns
+   ============================================================ */
+(function(){
+  if (window.__addyV2Installed) return;
+  window.__addyV2Installed = true;
+
+  function $(id){return document.getElementById(id);}
+  function el(tag, attrs, children){
+    var e=document.createElement(tag);
+    if(attrs){for(var k in attrs){if(k==='class')e.className=attrs[k];else if(k==='style')e.style.cssText=attrs[k];else e.setAttribute(k,attrs[k]);}}
+    if(children){children.forEach(function(c){e.appendChild(typeof c==='string'?document.createTextNode(c):c);});}
+    return e;
+  }
+
+  function findMascotSrc(cardId){
+    var card=$(cardId);
+    if(!card) return null;
+    var img=card.querySelector('.card-addy img, [class*="card-addy"] img, img[alt="Addy"]');
+    if(img) return img.src;
+    var any=card.querySelector('img');
+    return any?any.src:null;
+  }
+
+  function removeDashes(root){
+    if(!root) return;
+    var walker=document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    var node;
+    while((node=walker.nextNode())){
+      var t=node.nodeValue;
+      if(!t) continue;
+      var nt=t
+        .replace(/\s?[—–]\s?/g, ' ')
+        .replace(/\s+—\s+/g,' ')
+        .replace(/([a-zA-Z0-9])\s+-\s+([a-zA-Z0-9])/g,'$1 $2')
+        .replace(/\s{2,}/g,' ');
+      if(nt!==t) node.nodeValue=nt;
+    }
+  }
+
+  // ============ CASH: CONVERSATIONAL CHAT ============
+  function renderCash(){
+    var host=$('cash-ins');
+    if(!host) return;
+    var phase2=$('cash-phase2');
+    if(!phase2) return;
+    var existing=$('v2-cash-chat'); if(existing) existing.remove();
+    var existing2=$('v2-cash-chat-2'); if(existing2) existing2.remove();
+    var val=(host.querySelector('.ival')||{}).textContent||'$0';
+
+    var sliderCard=phase2.querySelector('.card');
+    if(sliderCard) sliderCard.style.display='none';
+
+    var wrap=el('div',{id:'v2-cash-chat',class:'v2-chat'});
+    var mascot=el('div',{class:'v2-chat-mascot'});
+    (function(){var s=document.querySelector('#cash-input-card .card-addy img');if(s)mascot.appendChild(el('img',{src:s.src,alt:'Addy'}));})();
+    var stream=el('div',{class:'v2-chat-stream'});
+    wrap.appendChild(mascot); wrap.appendChild(stream);
+    phase2.insertBefore(wrap, phase2.firstChild);
+
+    var b1=el('div',{class:'v2-bubble v2-first'});
+    b1.innerHTML='Okay, I had a look at your numbers. Here is what I found.';
+    stream.appendChild(b1);
+
+    setTimeout(function(){
+      var b2=el('div',{class:'v2-bubble hero cash-gap-red v2-fade-in v2-mid'});
+      b2.innerHTML='<div class="v2-tag">cash gap</div><div class="v2-big">'+val+'</div><div class="v2-cap">is earned but stuck in unpaid invoices. That is why things feel tight.</div>';
+      stream.appendChild(b2);
+
+      setTimeout(function(){
+        var t1=el('div',{class:'v2-typing',id:'v2-cash-t1'});
+        t1.innerHTML='<span></span><span></span><span></span>';
+        stream.appendChild(t1);
+
+        setTimeout(function(){
+          if(t1.parentNode) t1.remove();
+          var b3=el('div',{class:'v2-bubble v2-fade-in v2-last'});
+          b3.innerHTML='Want to see what changes if you got paid sooner? Try one of the options below.';
+          stream.appendChild(b3);
+
+          setTimeout(function(){
+            if(sliderCard){
+              sliderCard.style.display='';
+              sliderCard.classList.add('v2-fade-in');
+              stream.appendChild(sliderCard);
+              var shLabel=sliderCard.querySelector('.sh .st');
+              if(shLabel && /when.*paid/i.test(shLabel.textContent)) shLabel.textContent='If you got paid in';
+            }
+
+            setTimeout(function(){
+              var wrap2=el('div',{id:'v2-cash-chat-2',class:'v2-chat'});
+              var mascot2=el('div',{class:'v2-chat-mascot'});
+              (function(){var s=document.querySelector('#cash-input-card .card-addy img');if(s)mascot2.appendChild(el('img',{src:s.src,alt:'Addy'}));})();
+              var stream2=el('div',{class:'v2-chat-stream'});
+              wrap2.appendChild(mascot2); wrap2.appendChild(stream2);
+              var afterCard=sliderCard?sliderCard.nextSibling:null;
+              if(afterCard) phase2.insertBefore(wrap2,afterCard); else phase2.appendChild(wrap2);
+
+              var t2=el('div',{class:'v2-typing',id:'v2-cash-t2'});
+              t2.innerHTML='<span></span><span></span><span></span>';
+              stream2.appendChild(t2);
+
+              setTimeout(function(){
+                if(t2.parentNode) t2.remove();
+                var b4=el('div',{class:'v2-bubble v2-fade-in'});
+                b4.innerHTML='Would you like 3 simple things to focus on this month, to help turn tight cash into cash flow?';
+                var showBtn=document.createElement('button');
+                showBtn.id='v2-cash-show-btn';
+                showBtn.className='v2-show-btn';
+                showBtn.innerHTML='Show me, <span style="color:#6abf7a;">ADDY<span style="color:var(--forest)">!</span></span>';
+                showBtn.onclick=function(){
+                  showBtn.style.display='none';
+                  var t3=el('div',{class:'v2-typing',id:'v2-cash-t3',style:'margin-top:10px;'});
+                  t3.innerHTML='<span></span><span></span><span></span>';
+                  b4.appendChild(t3);
+                  setTimeout(function(){
+                    if(t3.parentNode) t3.remove();
+                    var p3=document.getElementById('cash-phase3');
+                    if(p3) p3.classList.add('visible');
+                    renderCashActions();
+                    var cAcEl=document.getElementById('c-ac');
+                    if(cAcEl) cAcEl._shown=true;
+                    setTimeout(function(){
+                      var ac=document.getElementById('c-ac');
+                      if(ac) ac.scrollIntoView({behavior:'smooth',block:'nearest'});
+                    },300);
+                  },4000);
+                };
+                b4.appendChild(showBtn);
+                stream2.appendChild(b4);
+              },1800);
+            },800);
+          },400);
+        },1800);
+      },400);
+    },300);
+  }
+
+  // ============ GROW: SCENARIO TABS + CHAT ============
+  function renderGrow(){
+    var host=$('grow-ins');
+    if(!host) return;
+    var phase2=$('grow-phase2');
+    if(!phase2) return;
+    var mascotSrc=findMascotSrc('grow-input-card');
+    var orphanCard=phase2.querySelector('.card[data-v2-tabbed]');
+    if(orphanCard){orphanCard.dataset.v2Tabbed='';phase2.appendChild(orphanCard);}
+    var orphanAc=phase2.querySelector('.g-ac-card');
+    if(orphanAc){orphanAc.style.display='none';phase2.appendChild(orphanAc);}
+    var existing=$('v2-grow-chat'); if(existing) existing.remove();
+    var existing2=$('v2-grow-chat-2'); if(existing2) existing2.remove();
+    var existingCta=phase2.querySelector('.grow-cta-box'); if(existingCta) existingCta.remove();
+    var val=(host.querySelector('.ival')||{}).textContent||'$0';
+
+    var chipsCard=phase2.querySelector('.card');
+    if(chipsCard) chipsCard.style.display='none';
+
+    var wrap=el('div',{id:'v2-grow-chat',class:'v2-chat'});
+    var mascot=el('div',{class:'v2-chat-mascot'});
+    if(mascotSrc){var m=el('img',{src:mascotSrc,alt:'Addy'});mascot.appendChild(m);}
+    var stream=el('div',{class:'v2-chat-stream'});
+    wrap.appendChild(mascot); wrap.appendChild(stream);
+    phase2.insertBefore(wrap, phase2.firstChild);
+
+    var b1=el('div',{class:'v2-bubble v2-first'});
+    b1.innerHTML='Okay, I had a look at your numbers. Here is what I found.';
+    stream.appendChild(b1);
+
+    setTimeout(function(){
+      var t1=el('div',{class:'v2-typing',id:'v2-grow-t1'});
+      t1.innerHTML='<span></span><span></span><span></span>';
+      stream.appendChild(t1);
+
+      setTimeout(function(){
+        if(t1.parentNode) t1.remove();
+        var b2=el('div',{class:'v2-bubble hero v2-fade-in v2-mid'});
+        b2.innerHTML='<div class="v2-tag">your revenue today</div><div class="v2-big">'+val+'</div><div class="v2-cap">per year from the numbers you gave me.</div>';
+        stream.appendChild(b2);
+
+        setTimeout(function(){
+          var t2=el('div',{class:'v2-typing',id:'v2-grow-t2'});
+          t2.innerHTML='<span></span><span></span><span></span>';
+          stream.appendChild(t2);
+
+          setTimeout(function(){
+            if(t2.parentNode) t2.remove();
+            var b3=el('div',{class:'v2-bubble v2-fade-in v2-last'});
+            b3.innerHTML='There are two ways to grow from here. Try the options below.';
+            stream.appendChild(b3);
+
+            setTimeout(function(){
+              if(chipsCard){
+                chipsCard.style.display='';
+                chipsCard.classList.add('v2-fade-in');
+                stream.appendChild(chipsCard);
+              }
+
+              setTimeout(function(){
+                var wrap2=el('div',{id:'v2-grow-chat-2',class:'v2-chat'});
+                var mascot2=el('div',{class:'v2-chat-mascot'});
+                if(mascotSrc){var m2=el('img',{src:mascotSrc,alt:'Addy'});mascot2.appendChild(m2);}
+                var stream2=el('div',{class:'v2-chat-stream'});
+                wrap2.appendChild(mascot2); wrap2.appendChild(stream2);
+                phase2.appendChild(wrap2);
+
+                var t3=el('div',{class:'v2-typing',id:'v2-grow-t3'});
+                t3.innerHTML='<span></span><span></span><span></span>';
+                stream2.appendChild(t3);
+
+                setTimeout(function(){
+                  if(t3.parentNode) t3.remove();
+                  var b4=el('div',{class:'v2-bubble v2-fade-in'});
+                  b4.innerHTML='Would you like 3 simple things to focus on this month to help you grow?';
+                  var showBtn=el('button',{class:'v2-show-btn',id:'v2-grow-show-btn',style:'margin-top:10px;'});
+                  showBtn.innerHTML='Show me, <span style="color:#6abf7a;">ADDY<span style="color:var(--forest)">!</span></span>';
+                  b4.appendChild(showBtn);
+                  stream2.appendChild(b4);
+
+                  var ctaBox=document.createElement('div');
+                  ctaBox.className='grow-cta-box cta-box';
+                  ctaBox.setAttribute('style','display:flex;align-items:flex-end;gap:1.5rem;');
+                  ctaBox.innerHTML='<div style="flex:1;text-align:left;"><p>Not sure what your numbers are really telling you?</p><p style="margin-top:0.5rem;">Let\'s walk through yours together. It\'s a FREE 30 minute call.</p><button class="btn" style="margin-top:0.5rem;" onclick="window.open(\'https://www.addvantage.ca/contact\')">Walk me through my numbers.</button><div style="margin-top:0.5rem;"><a href="https://www.addvantage.ca/about" target="_blank" style="font-size:11px;color:#c9a84c;text-decoration:underline;font-weight:600;">Learn more about Michelle</a></div></div>';
+                  phase2.appendChild(ctaBox);
+
+                  setTimeout(function(){b4.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
+                  showBtn.onclick=function(){
+                    showBtn.style.display='none';
+                    var t4=el('div',{class:'v2-typing',id:'v2-grow-t4',style:'margin-top:10px;'});
+                    t4.innerHTML='<span></span><span></span><span></span>';
+                    b4.appendChild(t4);
+                    setTimeout(function(){
+                      if(t4.parentNode) t4.remove();
+                      var acCard=phase2.querySelector('.g-ac-card');
+                      if(acCard){
+                        acCard.style.display='';
+                        acCard.classList.add('v2-fade-in');
+                        stream2.appendChild(acCard);
+                      }
+                      renderGrowActions();
+                      var gAcEl=document.getElementById('g-ac');
+                      if(gAcEl) gAcEl._shown=true;
+                      setTimeout(function(){
+                        if(gAcEl) gAcEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+                      },300);
+                    },4000);
+                  };
+                },1800);
+              },1200);
+            },400);
+          },1200);
+        },600);
+      },1000);
+    },800);
+
+    // Build chip-based scenario card
+    var slidersCard=phase2.querySelector('.card');
+    if(!slidersCard || slidersCard.dataset.v2Tabbed) return;
+    slidersCard.dataset.v2Tabbed='1';
+
+    var priceSlider=slidersCard.querySelector('#g-pi');
+    var volSlider=slidersCard.querySelector('#g-ni');
+    var proj=slidersCard.querySelector('.cmp');
+
+    function buildChipRow(label,presets,slider,resetOther){
+      var wrap=el('div',{class:'v2-chips-wrap'});
+      var lbl=el('div',{class:'v2-chips-label'});
+      lbl.textContent=label;
+      var row=el('div',{class:'v2-chips'});
+      presets.forEach(function(p){
+        var b=el('button',{type:'button',class:'v2-chip'});
+        b.textContent=p.label;
+        b.dataset.val=p.val;
+        b.addEventListener('click',function(){
+          if(resetOther){resetOther.value=0;}
+          slider.value=p.val;
+          row.querySelectorAll('.v2-chip').forEach(function(c){c.classList.toggle('on',c===b);});
+          if(typeof calcGrow==='function') try{calcGrow();}catch(e){}
+        });
+        row.appendChild(b);
+      });
+      wrap.appendChild(lbl);
+      wrap.appendChild(row);
+      return wrap;
+    }
+
+    var priceChips=buildChipRow('Try a price increase...',[
+      {val:5,label:'5%'},{val:10,label:'10%'},{val:15,label:'15%'},{val:20,label:'20%'}
+    ],priceSlider,volSlider);
+
+    var volChips=buildChipRow('Or take on more jobs...',[
+      {val:2,label:'+2 jobs'},{val:5,label:'+5 jobs'},{val:10,label:'+10 jobs'},{val:15,label:'+15 jobs'}
+    ],volSlider,priceSlider);
+
+    slidersCard.innerHTML='';
+    slidersCard.appendChild(priceChips);
+    slidersCard.appendChild(volChips);
+    if(proj) slidersCard.appendChild(proj);
+
+    if(priceSlider) slidersCard.appendChild(priceSlider);
+    if(volSlider) slidersCard.appendChild(volSlider);
+    priceSlider.style.display='none';
+    volSlider.style.display='none';
+    priceSlider.value=0; volSlider.value=0;
+    if(typeof calcGrow==='function') try{calcGrow();}catch(e){}
+  }
+
+  // ============ EXIT: CONVERSATIONAL CHAT ============
+  function renderExit(){
+    var host=$('exit-ins');
+    if(!host) return;
+    var phase2=$('exit-phase2');
+    if(!phase2) return;
+    var mascotSrc=findMascotSrc('exit-input-card');
+
+    phase2.querySelectorAll('.card[data-v2-tabbed]').forEach(function(c){c.dataset.v2Tabbed='';phase2.appendChild(c);});
+    phase2.querySelectorAll('.e-ac-card,.e-rd-card').forEach(function(c){phase2.appendChild(c);});
+    var existing=$('v2-exit-chat'); if(existing) existing.remove();
+    var existing2=$('v2-exit-chat-2'); if(existing2) existing2.remove();
+    var existingCta=phase2.querySelector('.exit-cta-box'); if(existingCta) existingCta.remove();
+
+    var currentVal=(host.querySelector('.ival')||{}).textContent||'$0';
+
+    var allCards=Array.prototype.slice.call(phase2.querySelectorAll('.card'));
+    var chipsCard=allCards[0]||null;
+    var rdCard=allCards[1]||null;
+    var acCard=allCards[2]||null;
+    if(rdCard) rdCard.classList.add('e-rd-card');
+    if(acCard) acCard.classList.add('e-ac-card');
+
+    [chipsCard,rdCard,acCard].forEach(function(c){if(c)c.style.display='none';});
+
+    var wrap=el('div',{id:'v2-exit-chat',class:'v2-chat'});
+    var mascot=el('div',{class:'v2-chat-mascot'});
+    if(mascotSrc){var m=el('img',{src:mascotSrc,alt:'Addy'});mascot.appendChild(m);}
+    var stream=el('div',{class:'v2-chat-stream'});
+    wrap.appendChild(mascot); wrap.appendChild(stream);
+    phase2.insertBefore(wrap, phase2.firstChild);
+
+    var b1=el('div',{class:'v2-bubble v2-first'});
+    b1.innerHTML='Okay, I had a look at your numbers. Here is what I found.';
+    stream.appendChild(b1);
+
+    setTimeout(function(){
+      var t1=el('div',{class:'v2-typing',id:'v2-exit-t1'});
+      t1.innerHTML='<span></span><span></span><span></span>';
+      stream.appendChild(t1);
+
+      setTimeout(function(){
+        if(t1.parentNode) t1.remove();
+        var b2=el('div',{class:'v2-bubble hero v2-fade-in v2-mid'});
+        b2.innerHTML='<div class="v2-tag">estimated value today</div><div class="v2-big">'+currentVal+'</div><div class="v2-cap">based on your profit and owner dependency.</div>';
+        stream.appendChild(b2);
+
+        setTimeout(function(){
+          var t2=el('div',{class:'v2-typing',id:'v2-exit-t2'});
+          t2.innerHTML='<span></span><span></span><span></span>';
+          stream.appendChild(t2);
+
+          setTimeout(function(){
+            if(t2.parentNode) t2.remove();
+            var b3=el('div',{class:'v2-bubble v2-fade-in v2-last'});
+            b3.innerHTML='There are two ways to increase what your business is worth. Try the options below.';
+            stream.appendChild(b3);
+
+            setTimeout(function(){
+              if(chipsCard){
+                chipsCard.style.display='';
+                chipsCard.classList.add('v2-fade-in');
+                stream.appendChild(chipsCard);
+              }
+              if(rdCard){
+                rdCard.style.display='';
+                rdCard.classList.add('v2-fade-in');
+                stream.appendChild(rdCard);
+              }
+
+              setTimeout(function(){
+                var wrap2=el('div',{id:'v2-exit-chat-2',class:'v2-chat'});
+                var mascot2=el('div',{class:'v2-chat-mascot'});
+                if(mascotSrc){var m2=el('img',{src:mascotSrc,alt:'Addy'});mascot2.appendChild(m2);}
+                var stream2=el('div',{class:'v2-chat-stream'});
+                wrap2.appendChild(mascot2); wrap2.appendChild(stream2);
+                phase2.appendChild(wrap2);
+
+                var t3=el('div',{class:'v2-typing',id:'v2-exit-t3'});
+                t3.innerHTML='<span></span><span></span><span></span>';
+                stream2.appendChild(t3);
+
+                setTimeout(function(){
+                  if(t3.parentNode) t3.remove();
+                  var b4=el('div',{class:'v2-bubble v2-fade-in'});
+                  b4.innerHTML='Would you like 3 things to focus on this month to make your business more valuable?';
+                  var showBtn=el('button',{class:'v2-show-btn',id:'v2-exit-show-btn',style:'margin-top:10px;'});
+                  showBtn.innerHTML='Show me, <span style="color:#6abf7a;">ADDY<span style="color:var(--forest)">!</span></span>';
+                  b4.appendChild(showBtn);
+                  stream2.appendChild(b4);
+
+                  var ctaBox=document.createElement('div');
+                  ctaBox.className='exit-cta-box cta-box';
+                  ctaBox.setAttribute('style','display:flex;align-items:flex-end;gap:1.5rem;');
+                  ctaBox.innerHTML='<div style="flex:1;text-align:left;"><p>Not sure what your numbers are really telling you?</p><p style="margin-top:0.5rem;">Let\'s walk through yours together. It\'s a FREE 30 minute call.</p><button class="btn" style="margin-top:0.5rem;" onclick="window.open(\'https://www.addvantage.ca/contact\')">Walk me through my numbers.</button><div style="margin-top:0.5rem;"><a href="https://www.addvantage.ca/about" target="_blank" style="font-size:11px;color:#c9a84c;text-decoration:underline;font-weight:600;">Learn more about Michelle</a></div></div>';
+                  phase2.appendChild(ctaBox);
+
+                  setTimeout(function(){b4.scrollIntoView({behavior:'smooth',block:'nearest'});},200);
+
+                  showBtn.onclick=function(){
+                    showBtn.style.display='none';
+                    var t4=el('div',{class:'v2-typing',id:'v2-exit-t4',style:'margin-top:10px;'});
+                    t4.innerHTML='<span></span><span></span><span></span>';
+                    b4.appendChild(t4);
+                    setTimeout(function(){
+                      if(t4.parentNode) t4.remove();
+                      var acCard=phase2.querySelector('.e-ac-card');
+                      if(acCard){
+                        acCard.style.display='';
+                        acCard.classList.add('v2-fade-in');
+                        stream2.appendChild(acCard);
+                      }
+                      renderExitActions();
+                      var eAcEl=document.getElementById('e-ac');
+                      if(eAcEl){eAcEl._shown=true;}
+                      setTimeout(function(){
+                        if(eAcEl) eAcEl.scrollIntoView({behavior:'smooth',block:'nearest'});
+                      },300);
+                    },4000);
+                  };
+                },1800);
+              },1200);
+            },400);
+          },1200);
+        },600);
+      },1000);
+    },800);
+
+    // Build chip-based scenario card
+    var slidersCard=phase2.querySelector('.card');
+    if(!slidersCard || slidersCard.dataset.v2Tabbed) return;
+    slidersCard.dataset.v2Tabbed='1';
+
+    var piSlider=slidersCard.querySelector('#e-pi');
+    var diInput=slidersCard.querySelector('#e-di');
+    var proj=slidersCard.querySelector('.cmp');
+
+    function buildExitChipRow(label,presets,onSelect){
+      var w=el('div',{class:'v2-chips-wrap'});
+      var lbl=el('div',{class:'v2-chips-label'});
+      lbl.textContent=label;
+      var row=el('div',{class:'v2-chips'});
+      row.style.gridTemplateColumns='repeat('+presets.length+',1fr)';
+      presets.forEach(function(p){
+        var b=el('button',{type:'button',class:'v2-chip'});
+        b.textContent=p.label;
+        b.dataset.val=String(p.val);
+        b.addEventListener('click',function(){
+          row.querySelectorAll('.v2-chip').forEach(function(c){c.classList.toggle('on',c===b);});
+          onSelect(p.val,row);
+          if(typeof calcExit==='function') try{calcExit();}catch(e){}
+        });
+        row.appendChild(b);
+      });
+      w.appendChild(lbl);
+      w.appendChild(row);
+      return w;
+    }
+
+    var profitChips=buildExitChipRow('Try a profit improvement...',[
+      {val:5,label:'5%'},{val:10,label:'10%'},{val:15,label:'15%'},{val:20,label:'20%'}
+    ],function(val){
+      if(piSlider) piSlider.value=val;
+    });
+
+    var depChips=buildExitChipRow('Or reduce owner dependency...',[
+      {val:'high',label:'I am the business'},{val:'med',label:'Somewhat dependent'},{val:'low',label:'Runs without me'}
+    ],function(val){
+      var depEl=document.getElementById('e-dep');
+      var depDisp=document.getElementById('e-dep-display');
+      var diEl=document.getElementById('e-di');
+      if(depEl) depEl.value=val;
+      var labels={high:'High: I am the business',med:'Medium: Somewhat dependent',low:'Low: Runs without me'};
+      if(depDisp) depDisp.textContent=labels[val]||val;
+      var diMap={high:0,med:1,low:2};
+      if(diEl) diEl.value=diMap[val]||0;
+    });
+
+    slidersCard.innerHTML='';
+    slidersCard.appendChild(profitChips);
+    slidersCard.appendChild(depChips);
+    if(proj) slidersCard.appendChild(proj);
+    if(piSlider){piSlider.style.display='none';slidersCard.appendChild(piSlider);piSlider.value=0;}
+    if(diInput){diInput.style.display='none';slidersCard.appendChild(diInput);diInput.value='-1';}
+    if(typeof calcExit==='function') try{calcExit();}catch(e){}
+  }
+
+  function patch(fnName, phaseId, renderFn){
+    var orig=window[fnName];
+    if(typeof orig!=='function') return;
+    window[fnName]=function(){
+      var r=orig.apply(this,arguments);
+      var ph=$(phaseId);
+      if(!ph) return r;
+      var mo=new MutationObserver(function(){
+        if(ph.classList.contains('visible')){
+          try{renderFn();}catch(e){console.error(e);}
+          mo.disconnect();
+        }
+      });
+      mo.observe(ph,{attributes:true,attributeFilter:['class']});
+      if(ph.classList.contains('visible')){ try{renderFn();}catch(e){} }
+      return r;
+    };
+  }
+
+  function tryPatch(){
+    patch('startCash','cash-phase2',renderCash);
+    patch('startGrow','grow-phase2',renderGrow);
+    patch('startExit','exit-phase2',renderExit);
+  }
+
+  function scrubDashes(){
+    ['s-goals','s-cash','s-grow','s-exit'].forEach(function(id){
+      var r=$(id); if(r) removeDashes(r);
+    });
+  }
+
+  function init(){
+    tryPatch();
+    scrubDashes();
+    if($('cash-phase2') && $('cash-phase2').classList.contains('visible')) renderCash();
+    if($('grow-phase2') && $('grow-phase2').classList.contains('visible')) renderGrow();
+    if($('exit-phase2') && $('exit-phase2').classList.contains('visible')) renderExit();
+  }
+
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded', init);}
+  else{init();}
+
+  document.addEventListener('click', function(){ setTimeout(scrubDashes, 20); }, true);
+
+  var PRESETS=[{days:30,label:'Net 30'},{days:60,label:'Net 60'},{days:90,label:'Net 90'}];
+  function installCashChips(){
+    var slider=document.getElementById('c-sl');
+    var card=slider?slider.closest('.card'):null;
+    if(!card) return;
+    if(card.querySelector('.v2-chips-wrap')) return;
+    var wrap=el('div',{class:'v2-chips-wrap'});
+    var lbl=el('div',{class:'v2-chips-label'});
+    lbl.textContent='If you got paid in...';
+    var row=el('div',{class:'v2-chips'});
+    row.style.gridTemplateColumns='repeat(3,1fr)';
+    PRESETS.forEach(function(p){
+      var b=el('button',{type:'button',class:'v2-chip'});
+      b.textContent=p.label;
+      b.dataset.days=p.days;
+      b.addEventListener('click',function(){setDays(p.days);});
+      row.appendChild(b);
+    });
+    wrap.appendChild(lbl); wrap.appendChild(row);
+    var r2=card.querySelector('.r2');
+    if(r2) card.insertBefore(wrap,r2); else card.appendChild(wrap);
+    if(slider) slider.style.display='none';
+    var sh=card.querySelector('.sh');if(sh) sh.style.display='none';
+    function setDays(v,fromOther){
+      slider.value=v;
+      slider.dispatchEvent(new Event('input',{bubbles:true}));
+      if(typeof calcCash==='function'){try{calcCash();}catch(e){}}
+      row.querySelectorAll('.v2-chip').forEach(function(b){
+        b.classList.toggle('on',!fromOther && parseInt(b.dataset.days,10)===v);
+      });
+    }
+    setDays(30);
+  }
+  function bootCashChips(){
+    var ph=document.getElementById('cash-phase2');
+    if(!ph) return;
+    if(ph.classList.contains('visible')){installCashChips();return;}
+    var mo=new MutationObserver(function(){
+      if(ph.classList.contains('visible')) installCashChips();
+    });
+    mo.observe(ph,{attributes:true,attributeFilter:['class']});
+  }
+  if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',bootCashChips);}
+  else{bootCashChips();}
+
+})();
