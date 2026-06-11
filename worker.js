@@ -50,7 +50,8 @@ function corsHeaders() {
 // ── CASH FLOW ────────────────────────────────────────────────
 function calcCash({ rev = 0, dso = 45, tgt = 30 }) {
   const revC = rev || 500000;
-  const dsoC = dso || 45;
+  // dso of 0 is a real choice (Due on Receipt) — only fall back when missing
+  const dsoC = dso === 0 ? 0 : (dso || 45);
   const trapped = (revC / 365) * dsoC;
   const tt = (revC / 365) * tgt;
   const freed = trapped - tt;

@@ -67,10 +67,10 @@ function toggleDsoDrop(){
     },60);
   }
 }
-function selectDso(val){
+function selectDso(val,label){
   document.getElementById('c-dso').value=val;
   var disp=document.getElementById('c-dso-display');
-  disp.textContent=val;
+  disp.textContent=label||val;
   disp.classList.remove('cs-display-empty');
   document.querySelectorAll('#c-dso-options .custom-sel-option').forEach(function(o){o.classList.remove('selected');});
   event.target.classList.add('selected');
@@ -136,7 +136,7 @@ function cashFieldValidate(inputId,errId){
     if(wrapper)wrapper.classList.add('input-error');
     if(err){err.textContent='Numbers only';err.classList.add('show');}
     return false;
-  }else if(!el.value||parseFloat(el.value)<=0){
+  }else if(el.value===''||(inputId!=='c-dso'&&parseFloat(el.value)<=0)){
     if(wrapper)wrapper.classList.add('input-error');
     if(err){err.textContent='Please complete';err.classList.add('show');}
     return false;
