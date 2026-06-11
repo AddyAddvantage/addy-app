@@ -7,14 +7,19 @@
 const WORKER_URL = 'https://addy-calculator.michelle-1db.workers.dev';
 
 async function api(goal, inputs) {
-  const res = await fetch(WORKER_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ goal, inputs }),
-  });
-  if (!res.ok) throw new Error('API error ' + res.status);
-  const data = await res.json();
-  return data.result;
+  try {
+    const res = await fetch(WORKER_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ goal, inputs }),
+    });
+    if (!res.ok) throw new Error('API error ' + res.status);
+    const data = await res.json();
+    return data.result;
+  } catch (e) {
+    console.warn('Addy calc unavailable:', e.message);
+    return null;
+  }
 }
 
 let goal=null;
@@ -44,9 +49,42 @@ function toGate(){
     cashFieldFocus('c-rev','c-rev-err');cashFieldFocus('c-dso','c-dso-err');
     setTimeout(function(){var r=document.getElementById('c-rev');if(r)r.focus();},300);
   }
-  else if(goal==='grow'){show('s-grow');calcGrow();setTimeout(function(){var g=document.getElementById('g-nc');if(g)g.focus();},300);}
-  else{show('s-exit');calcExit();setTimeout(function(){var el=document.getElementById('e-pro');if(el)el.focus();},300);}
+  else if(goal==='grow'){show('s-grow');setTimeout(function(){var g=document.getElementById('g-nc');if(g)g.focus();},300);}
+  else{show('s-exit');setTimeout(function(){var el=document.getElementById('e-pro');if(el)el.focus();},300);}
 }
+function toggleDsoDrop(){
+  var opts=document.getElementById('c-dso-options');
+  var trigger=document.getElementById('c-dso-trigger');
+  var isOpen=opts.classList.contains('open');
+  opts.classList.toggle('open',!isOpen);
+  trigger.classList.toggle('open',!isOpen);
+  if(!isOpen){
+    setTimeout(function(){
+      var r=opts.getBoundingClientRect();
+      if(r.bottom>window.innerHeight-24){
+        window.scrollBy({top:r.bottom-window.innerHeight+40,behavior:'smooth'});
+      }
+    },60);
+  }
+}
+function selectDso(val){
+  document.getElementById('c-dso').value=val;
+  var disp=document.getElementById('c-dso-display');
+  disp.textContent=val;
+  disp.classList.remove('cs-display-empty');
+  document.querySelectorAll('#c-dso-options .custom-sel-option').forEach(function(o){o.classList.remove('selected');});
+  event.target.classList.add('selected');
+  document.getElementById('c-dso-options').classList.remove('open');
+  document.getElementById('c-dso-trigger').classList.remove('open');
+  cashFieldFocus('c-dso','c-dso-err');
+}
+document.addEventListener('click',function(e){
+  var wrap=document.getElementById('c-dso-wrap');
+  if(wrap&&!wrap.contains(e.target)){
+    var opts=document.getElementById('c-dso-options');if(opts)opts.classList.remove('open');
+    var t=document.getElementById('c-dso-trigger');if(t)t.classList.remove('open');
+  }
+});
 function selectDepLever(idx){
   document.getElementById('e-di').value=idx;
   for(var i=0;i<3;i++){
@@ -93,7 +131,7 @@ function acts(list){return list.map((a,i)=>`<div class="ai"><div class="an ${['a
 function cashFieldValidate(inputId,errId){
   var el=document.getElementById(inputId);
   var err=document.getElementById(errId);
-  var wrapper=el.closest('.ir');
+  var wrapper=el.closest('.ir')||document.getElementById(inputId+'-trigger');
   if(el.validity&&el.validity.badInput){
     if(wrapper)wrapper.classList.add('input-error');
     if(err){err.textContent='Numbers only';err.classList.add('show');}
@@ -112,7 +150,7 @@ function cashFieldFocus(inputId,errId){
   var el=document.getElementById(inputId);
   var err=document.getElementById(errId);
   if(!el)return;
-  var wrapper=el.closest('.ir');
+  var wrapper=el.closest('.ir')||document.getElementById(inputId+'-trigger');
   if(wrapper)wrapper.classList.remove('input-error');
   if(err)err.classList.remove('show');
 }
@@ -246,20 +284,15 @@ async function calcCash(){
   const dso=parseFloat(document.getElementById('c-dso').value)||0;
   const tgt=parseFloat(document.getElementById('c-sl').value)||30;
   const r=await api('cash',{rev,dso,tgt});
+  if(!r) return;
   document.getElementById('c-td').textContent=Math.round(r.tgt)+' days';
   updateSliderTicks('c-sl',[0,30,60,90]);
   document.getElementById('cash-ins').innerHTML=`<div class="ib ${r.danger?'danger':'sage'}"><div class="irow"><div class="ival">${f(r.trapped)}</div><div class="ilbl">you've earned... but can't use. This is why your cash feels tight.</div></div></div>`;
+  // red/green state handled in CSS via .c-sage / .c-danger classes (:has rules)
   document.getElementById('c-fr').textContent=f(Math.abs(r.freed));
   document.getElementById('c-fr').className='rv '+(r.freed>=0?'c-sage':'c-danger');
   document.getElementById('c-fn').textContent=r.tgtLessThanDso?'back in your bank account':'still not in your bank account';
   document.getElementById('c-fn').className='rn '+(r.tgtLessThanDso?'c-sage':'c-danger');
-  var fr=document.getElementById('c-fr');
-  var fn=document.getElementById('c-fn');
-  var isGood=r.tgtLessThanDso;
-  if(fr)fr.style.color=isGood?'#4a6b58':'#ffffff';
-  if(fn)fn.style.color=isGood?'#4a6b58':'#ffffff';
-  var rb=fr?fr.closest('.rb'):null;
-  if(rb){rb.style.background=isGood?'':'#7b1a1a';rb.style.border=isGood?'':'1px solid #5c1111';rb.style.color=isGood?'':'#ffffff';}
   var cAcEl=document.getElementById('c-ac');if(cAcEl&&!cAcEl._shown){cAcEl.innerHTML='';}
 }
 function renderCashActions(){
@@ -342,19 +375,33 @@ async function calcGrow(){
   const p=parseFloat(document.getElementById('g-ap').value)||850;
   const pi=parseInt(document.getElementById('g-pi').value)||0;
   const ni=parseInt(document.getElementById('g-ni').value)||0;
-  document.getElementById('g-pd').textContent=pi+'%';
-  document.getElementById('g-cd').textContent=ni;
+  var gPd=document.getElementById('g-pd'); if(gPd) gPd.textContent=pi+'%';
+  var gCd=document.getElementById('g-cd'); if(gCd) gCd.textContent=ni;
   updateSliderTicks('g-ni',[0,10,20,30]);
   const r=await api('grow',{c,p,pi,ni});
+  if(!r) return;
+  const gt=r.gp+r.gc;
   document.getElementById('grow-ins').innerHTML=`<div class="ib ${r.lo?'warn':'forest'}"><div class="irow" style="align-items:flex-end;"><div style="display:flex;flex-direction:column;"><div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Current</div><div class="ival">${f(r.cur)}</div></div><div class="ilbl" style="margin-top:0;padding-bottom:12px;">per year from ${c} jobs at ${f(p)} each.</div></div></div>`;
   document.getElementById('g-nr').textContent=f(r.nw);
-  document.getElementById('g-ns').textContent=(r.gp+r.gc)>0?`+${f(r.gp+r.gc)} per year`:'adjust levers above';
-  document.getElementById('g-gp').textContent=f(r.gp);
+  document.getElementById('g-ns').textContent=gt>0?`+${f(gt)} per year`:'select an option above';
+  var gGp=document.getElementById('g-gp'); if(gGp) gGp.textContent=f(r.gp);
   var gpWrap=document.getElementById('g-gp-wrap');
   if(gpWrap){var leftPct=(pi/50)*100;var cw=gpWrap.parentElement.offsetWidth||300;var lw=gpWrap.offsetWidth||140;var leftPx=(leftPct/100)*cw;var clampedPx=Math.max(lw/2,Math.min(leftPx,cw-lw/2));gpWrap.style.left=(clampedPx/cw*100)+'%';}
-  document.getElementById('g-gc').textContent=f(r.gc);
+  var gGc=document.getElementById('g-gc'); if(gGc) gGc.textContent=f(r.gc);
   var gcWrap=document.getElementById('g-gc-wrap');
   if(gcWrap){var leftPct2=(ni/30)*100;var cw2=gcWrap.parentElement.offsetWidth||300;var lw2=gcWrap.offsetWidth||140;var leftPx2=(leftPct2/100)*cw2;var clampedPx2=Math.max(lw2/2,Math.min(leftPx2,cw2-lw2/2));gcWrap.style.left=(clampedPx2/cw2*100)+'%';}
+  // projected box turns green when an uplift is selected
+  var gNrEl=document.getElementById('g-nr');
+  var projBox=gNrEl?gNrEl.closest('.cb'):null;
+  if(projBox){
+    projBox.style.background=gt>0?'#d4edda':'#f9fafb';
+    projBox.style.border=gt>0?'1px solid #a8d5b5':'0.5px solid #e5e7eb';
+    projBox.style.borderRadius='8px';
+    projBox.style.padding='12px';
+    var ns=document.getElementById('g-ns');
+    gNrEl.style.color=gt>0?'#2d6a4f':'#1a1a1a';
+    if(ns) ns.style.color=gt>0?'#2d6a4f':'#6b7280';
+  }
   var gAcEl=document.getElementById('g-ac');if(gAcEl&&!gAcEl._shown){gAcEl.innerHTML='';}
 }
 function renderGrowActions(){
@@ -441,6 +488,7 @@ async function calcExit(){
   var ePd=document.getElementById('e-pd'); if(ePd) ePd.textContent=pi+'%';
   const nothingSelected=(di<0&&pi===0);
   const r=await api('exit',{profit,years,dep,pi,di,nothingSelected});
+  if(!r) return;
   document.getElementById('exit-ins').innerHTML=`<div class="ib ${r.isDanger?'danger':'sage'}"><div class="irow"><div class="ival">${f(r.curVal)}</div><div class="ilbl">Estimated current value.</div></div></div>`;
   document.getElementById('e-nv').textContent=f(r.newVal);
   document.getElementById('e-ns').textContent=nothingSelected?'select an option above':'+'+f(r.uplift)+' uplift';
@@ -484,9 +532,10 @@ function renderExitActions(){
   ];
   if(years<5){var yr=pickNext(yrsOpts,_lastYrs);_lastYrs=yr.idx;exitActs.push(yr.item);}
   if(exitActs.length<3)exitActs.push({t:'Get your numbers clean and ready for review.',s:'Messy numbers = low offers.'});
+  if(exitActs.length<3)exitActs.push({t:'Write down how your business runs. Systems, contacts, pricing.',s:'A business that lives in your head is worth less than one on paper.'});
   document.getElementById('e-ac').innerHTML=acts(exitActs);
 }
-calcCash();calcGrow();calcExit();
+// calculations run when each flow starts — no page-load API calls needed
 
 /* ============================================================
    ADDY v2 OVERLAY — conversational chat, chips, render fns
@@ -1050,8 +1099,8 @@ calcCash();calcGrow();calcExit();
     var sh=card.querySelector('.sh');if(sh) sh.style.display='none';
     function setDays(v,fromOther){
       slider.value=v;
+      // one calc per click — the slider's oninput attribute calls calcCash
       slider.dispatchEvent(new Event('input',{bubbles:true}));
-      if(typeof calcCash==='function'){try{calcCash();}catch(e){}}
       row.querySelectorAll('.v2-chip').forEach(function(b){
         b.classList.toggle('on',!fromOther && parseInt(b.dataset.days,10)===v);
       });

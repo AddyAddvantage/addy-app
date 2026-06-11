@@ -77,12 +77,11 @@
 <div class="screen" id="s-cash">
 <div class="goals-header"><div class="goals-header-inner"><div class="goals-header-brand"><span class="goals-header-big">ADDY</span><span class="goals-header-by"> by </span><span class="goals-header-script">Addvantage Advisory Services</span></div></div></div>
 <div class="results-page">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-  <button class="btn-back" onclick="show('s-goals')" style="margin:0;">&#8592; Home</button>
-  <button class="btn-back" onclick="cashStartOver()" style="margin:0;">&#8635; Refresh</button>
+<div class="cash-results-nav">
+  <button class="btn-back" onclick="show('s-goals')">&#8592; Home</button>
+  <span class="cash-results-title">Cash Feels Tight</span>
+  <button class="btn-back" onclick="cashStartOver()">&#8635; Refresh</button>
 </div>
-<div class="cash-pill-wrap"><div class="pill" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--sage-dark);letter-spacing:0.15em;"><svg width="14" height="14" viewBox="0 0 28 28" fill="none" style="flex-shrink:0;"><path d="M5.5 3.2 C4.7 2.9 3.9 3.6 4.1 4.7 L3.9 23.5 C3.8 24.5 4.6 25.1 5.6 24.9 L22.4 25.1 C23.4 25.2 24.1 24.5 23.9 23.5 L23.7 4.6 C23.8 3.7 23.1 3.1 22.2 3.3 Z" stroke="#2d3f38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.2 5.5 C6.6 5.2 6.1 5.8 6.3 6.7 L6.1 10 C6 10.8 6.6 11.3 7.4 11.1 L20.6 11.3 C21.4 11.4 21.9 10.8 21.7 10 L21.5 6.6 C21.6 5.8 21 5.3 20.3 5.6 Z" stroke="#2d3f38" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 14 C6.5 13.5 6.8 12.9 7.6 13 L9.8 12.9 C10.5 12.8 10.9 13.3 10.7 14 L10.5 15.8 C10.6 16.5 10.1 16.9 9.4 16.7 L7.2 16.8 C6.5 16.9 6.2 16.4 6.4 15.7 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.8 14 C12.3 13.5 12.6 12.9 13.4 13 L15.6 12.9 C16.3 12.8 16.7 13.3 16.5 14 L16.3 15.8 C16.4 16.5 15.9 16.9 15.2 16.7 L13 16.8 C12.3 16.9 12 16.4 12.2 15.7 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.6 14 C18.1 13.5 18.4 12.9 19.2 13 L21.2 12.9 C21.9 12.8 22.2 13.3 22 14 L21.8 15.8 C21.9 16.5 21.4 16.9 20.8 16.7 L18.8 16.8 C18.1 16.9 17.9 16.4 18.1 15.7 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 18.5 C6.5 18 6.8 17.4 7.6 17.5 L9.8 17.4 C10.5 17.3 10.9 17.8 10.7 18.5 L10.5 20.3 C10.6 21 10.1 21.4 9.4 21.2 L7.2 21.3 C6.5 21.4 6.2 20.9 6.4 20.2 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.8 18.5 C12.3 18 12.6 17.4 13.4 17.5 L15.6 17.4 C16.3 17.3 16.7 17.8 16.5 18.5 L16.3 20.3 C16.4 21 15.9 21.4 15.2 21.2 L13 21.3 C12.3 21.4 12 20.9 12.2 20.2 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.6 18.5 C18.1 18 18.4 17.4 19.2 17.5 L21.2 17.4 C21.9 17.3 22.2 17.8 22 18.5 L21.8 24 C21.9 24.7 21.4 25 20.8 24.8 L18.8 24.9 C18.1 25 17.9 24.5 18.1 23.8 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 23 C6.5 22.5 6.8 21.9 7.6 22 L9.8 21.9 C10.5 21.8 10.9 22.3 10.7 23 L10.5 24.3 C10.6 25 10.1 25.3 9.4 25.1 L7.2 25.2 C6.5 25.3 6.2 24.8 6.4 24.1 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12.8 23 C12.3 22.5 12.6 21.9 13.4 22 L15.6 21.9 C16.3 21.8 16.7 22.3 16.5 23 L16.3 24.3 C16.4 25 15.9 25.3 15.2 25.1 L13 25.2 C12.3 25.3 12 24.8 12.2 24.1 Z" stroke="#2d3f38" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Cash feels tight</div></div>
-<div id="cash-input-summary"><div class="sum-vals"><div id="c-sum-rev" class="sum-num">$0</div><div id="c-sum-dso">days to get paid</div></div><button class="sum-edit" onclick="cashStartOver()">Edit</button></div>
 <div class="card" id="cash-input-card">
   <div id="card-thinking-overlay" class="card-thinking">
     <img class="card-thinking-img" src="assets/addy-character.png" alt="Addy thinking"/>
@@ -112,9 +111,9 @@
           <div class="ig">
             <div class="ig-content">
               <div class="ig-row">
-                <div class="il">Time it takes to get paid</div>
+                <div class="il">Days to get paid</div>
                 <div class="ig-input-col">
-                  <div class="ir"><input type="number" id="c-dso" placeholder="e.g. 45"><span class="px">days</span></div>
+                  <div class="custom-sel-wrap cs-cash" id="c-dso-wrap"><div class="custom-sel-trigger" id="c-dso-trigger" tabindex="0" onclick="toggleDsoDrop()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleDsoDrop();}"><input type="hidden" id="c-dso" value=""><span id="c-dso-display" class="cs-display-empty">Select</span><span class="cs-px">days</span><span class="cs-arrow">&#9662;</span></div><div class="custom-sel-options" id="c-dso-options"><div class="custom-sel-option" onclick="selectDso('15')">15</div><div class="custom-sel-option" onclick="selectDso('25')">25</div><div class="custom-sel-option" onclick="selectDso('31')">31</div><div class="custom-sel-option" onclick="selectDso('45')">45</div><div class="custom-sel-option" onclick="selectDso('60')">60</div><div class="custom-sel-option" onclick="selectDso('90')">90</div></div></div>
                   <div class="field-error-msg" id="c-dso-err">Please complete</div>
                 </div>
               </div>
@@ -125,6 +124,7 @@
       </div>
     </div>
   </div>
+  <div id="cash-input-summary"><div class="sum-vals"><span id="c-sum-rev"></span> &middot; <span id="c-sum-dso"></span></div><button class="sum-edit" onclick="cashStartOver()">Edit</button></div>
 </div>
 <div id="cash-thinking" class="cash-thinking">
   <img src="assets/addy-character.png" alt="Addy thinking"/>
@@ -173,12 +173,11 @@
 <div class="screen" id="s-grow">
 <div class="goals-header"><div class="goals-header-inner"><div class="goals-header-brand"><span class="goals-header-big">ADDY</span><span class="goals-header-by"> by </span><span class="goals-header-script">Addvantage Advisory Services</span></div></div></div>
 <div class="results-page" style="max-width:1100px;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-  <button class="btn-back" onclick="show('s-goals')" style="margin:0;">&#8592; Home</button>
-  <button class="btn-back" onclick="growStartOver()" style="margin:0;">&#8635; Refresh</button>
+<div class="cash-results-nav">
+  <button class="btn-back" onclick="show('s-goals')">&#8592; Home</button>
+  <span class="cash-results-title">We're Growing But It Feels Messy</span>
+  <button class="btn-back" onclick="growStartOver()">&#8635; Refresh</button>
 </div>
-<div class="cash-pill-wrap"><div class="pill" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--sage-dark);letter-spacing:0.15em;"><svg width="14" height="14" viewBox="0 0 28 28" fill="none" style="flex-shrink:0;"><path d="M2.5 5 C2.2 4.4 2.8 3.9 3.5 4.2 L24.5 3.9 C25.2 3.7 25.7 4.3 25.3 4.9" stroke="#2d3f38" stroke-width="2" stroke-linecap="round"/><path d="M5.2 4.5 C4.6 4.2 4 4.8 4.2 5.6 L4 18 C3.8 18.8 4.4 19.3 5.2 19.1 L22.8 19.3 C23.6 19.4 24.1 18.8 23.9 18 L23.7 5.5 C23.9 4.7 23.3 4.2 22.6 4.5 Z" stroke="#2d3f38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M8.5 18.8 C8.3 18.2 8.7 17.3 9.2 14.5" stroke="#2d3f38" stroke-width="2.2" stroke-linecap="round"/><path d="M12 18.8 C11.8 18 12.2 16.5 12.5 10.5" stroke="#2d3f38" stroke-width="2.2" stroke-linecap="round"/><path d="M15.5 18.8 C15.3 18.2 15.7 17 16 12" stroke="#2d3f38" stroke-width="2.2" stroke-linecap="round"/><path d="M19 18.8 C18.8 18 19.2 16 19.5 8" stroke="#2d3f38" stroke-width="2.2" stroke-linecap="round"/><path d="M14 19.5 C13.5 20 11.5 24 10.5 25" stroke="#2d3f38" stroke-width="2" stroke-linecap="round"/><path d="M14 19.5 C14.5 20 16.5 24 17.5 25" stroke="#2d3f38" stroke-width="2" stroke-linecap="round"/></svg> We're growing but it feels messy</div></div>
-<div id="grow-input-summary"><div class="sum-vals"><div id="g-sum-nc" class="sum-num">0 clients</div><div id="g-sum-ap">avg job</div></div><button class="sum-edit" onclick="growStartOver()">Edit</button></div>
 <div class="card" id="grow-input-card" style="padding:1.25rem 2.5rem;">
   <div id="grow-thinking-overlay" class="card-thinking">
     <img class="card-thinking-img" src="assets/addy-character.png" alt="Addy thinking"/>
@@ -203,6 +202,7 @@
       </div>
     </div>
   </div>
+  <div id="grow-input-summary"><div class="sum-vals"><span id="g-sum-nc"></span> &middot; <span id="g-sum-ap"></span></div><button class="sum-edit" onclick="growStartOver()">Edit</button></div>
 </div>
 <div id="grow-phase2" class="cash-reveal">
 <div id="grow-ins"><div class="ib forest"><div class="irow" style="align-items:flex-end;"><div style="display:flex;flex-direction:column;"><div style="font-size:11px;color:#6b7280;margin-bottom:2px;">Current</div><div class="ival">$10.2K</div></div><div class="ilbl" style="margin-top:0;padding-bottom:12px;">per year from 12 jobs at $850 each. Now let's see if you're growing by working more...or earning more.</div></div></div></div>
@@ -238,7 +238,6 @@
   <div class="card-thinking-sub">This will only take a moment</div>
 </div>
 <div id="g-ac"></div></div>
-<div class="cta-box" style="display:flex;align-items:flex-end;gap:1.5rem;"><div style="flex:1;text-align:left;"><p>Not sure what your numbers are really telling you?</p><p style="margin-top:0.5rem;">Let's walk through yours together. It's a FREE 30 minute call.</p><button class="btn" style="margin-top:0.5rem;" onclick="window.open('https://www.addvantage.ca/contact')">Walk me through my numbers.</button><div style="margin-top:0.5rem;"><a href="https://www.addvantage.ca/about" target="_blank" style="font-size:11px;color:#c9a84c;text-decoration:underline;font-weight:600;">Learn more about Michelle</a></div></div></div>
 </div>
 </div>
 <div style="position:relative;z-index:2;background:#ffffff;">
@@ -260,12 +259,11 @@
 <div class="screen" id="s-exit">
 <div class="goals-header"><div class="goals-header-inner"><div class="goals-header-brand"><span class="goals-header-big">ADDY</span><span class="goals-header-by"> by </span><span class="goals-header-script">Addvantage Advisory Services</span></div></div></div>
 <div class="results-page" style="max-width:1100px;">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-  <button class="btn-back" onclick="show('s-goals')" style="margin:0;">&#8592; Home</button>
-  <button class="btn-back" onclick="exitStartOver()" style="margin:0;">&#8635; Refresh</button>
+<div class="cash-results-nav">
+  <button class="btn-back" onclick="show('s-goals')">&#8592; Home</button>
+  <span class="cash-results-title">I Want To Build Something I Can Sell</span>
+  <button class="btn-back" onclick="exitStartOver()">&#8635; Refresh</button>
 </div>
-<div class="cash-pill-wrap"><div class="pill" style="display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--sage-dark);letter-spacing:0.15em;"><svg width="14" height="14" viewBox="0 0 28 28" fill="none" style="flex-shrink:0;"><rect x="4" y="11" width="20" height="14" rx="1" stroke="#2d3f38" stroke-width="2" stroke-linejoin="round"/><path d="M2 13 L14 3 L26 13" stroke="#2d3f38" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><rect x="11" y="17" width="6" height="8" stroke="#2d3f38" stroke-width="1.5" stroke-linejoin="round"/><rect x="7" y="15" width="4" height="4" stroke="#2d3f38" stroke-width="1.5" stroke-linejoin="round"/><rect x="17" y="15" width="4" height="4" stroke="#2d3f38" stroke-width="1.5" stroke-linejoin="round"/></svg> I want to build something I can sell</div></div>
-<div id="exit-input-summary"><div class="sum-vals"><div id="e-sum-pro" class="sum-num">$0 profit</div><div id="e-sum-yr">yrs trading</div></div><button class="sum-edit" onclick="exitStartOver()">Edit</button></div>
 <div class="card" id="exit-input-card" style="padding:1.25rem 2.5rem;">
   <div id="exit-thinking-overlay" class="card-thinking">
     <img class="card-thinking-img" src="assets/addy-character.png" alt="Addy thinking"/>
@@ -291,13 +289,14 @@
       </div>
     </div>
   </div>
+  <div id="exit-input-summary"><div class="sum-vals"><span id="e-sum-pro"></span> &middot; <span id="e-sum-yr"></span></div><button class="sum-edit" onclick="exitStartOver()">Edit</button></div>
 </div>
 <div id="exit-phase2" class="cash-reveal">
 <div id="exit-ins"><div class="ib sage"><div class="irow"><div class="ival">$390.0K</div><div class="ilbl">Estimated current value.</div></div></div></div>
 <div class="card">
   <div class="ct">Here's how much more your business could be worth.</div>
   <div class="sh"><div class="st">Profit improvement</div><div class="sv" id="e-pd">10%</div></div>
-  <input type="range" min="0" max="50" step="1" id="e-pi" value="10" oninput="calcExit()">
+  <input type="range" min="0" max="50" step="1" id="e-pi" value="0" oninput="calcExit()">
   <div style="position:relative;height:16px;margin-bottom:1rem;font-size:11px;color:#6b7280;">
     <span style="position:absolute;left:0%;transform:translateX(0%);">0%</span>
     <span style="position:absolute;left:20%;transform:translateX(-50%);">10%</span>
@@ -306,7 +305,7 @@
   </div>
   <div class="div"></div>
   <div class="sh" style="margin-bottom:8px;"><div class="st">Owner dependency</div></div>
-  <input type="hidden" id="e-di" value="1">
+  <input type="hidden" id="e-di" value="-1">
   <div style="display:flex;gap:8px;margin-bottom:1rem;">
     <button class="dep-btn" id="dep-btn-0" onclick="selectDepLever(0)" style="flex:1;padding:8px;border-radius:var(--radius-sm);border:2px solid #e5e7eb;background:#f9fafb;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;color:#6b7280;transition:all 0.2s;">High</button>
     <button class="dep-btn dep-btn-active" id="dep-btn-1" onclick="selectDepLever(1)" style="flex:1;padding:8px;border-radius:var(--radius-sm);border:2px solid #6abf7a;background:#edf7f0;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;color:#2d3f38;font-weight:600;transition:all 0.2s;">Somewhat</button>
@@ -325,8 +324,6 @@
   <div class="card-thinking-sub">This will only take a moment</div>
 </div>
 <div id="e-ac"></div></div>
-<div class="cta-box" style="display:flex;align-items:flex-end;gap:1.5rem;"><div style="flex:1;text-align:left;"><p>Not sure what your numbers are really telling you?</p><p style="margin-top:0.5rem;">Let's walk through yours together. It's a FREE 30 minute call.</p><button class="btn" style="margin-top:0.5rem;" onclick="window.open('https://www.addvantage.ca/contact')">Walk me through my numbers.</button>
-<div style="margin-top:0.5rem;"><a href="https://www.addvantage.ca/about" target="_blank" style="font-size:11px;color:#c9a84c;text-decoration:underline;font-weight:600;">Learn more about Michelle</a></div></div></div>
 </div>
 </div>
 <div style="position:relative;z-index:2;background:#ffffff;">
