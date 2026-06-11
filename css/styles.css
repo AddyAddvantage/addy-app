@@ -597,6 +597,7 @@ input[type=range]{width:100%;accent-color:var(--sage-dark);margin-bottom:4px;}
 .cta-box .btn{background:#ffffff !important;color:var(--forest) !important;font-weight:600 !important;}
 .cta-box .btn:hover{background:var(--sage-light) !important;color:var(--forest) !important;}
 #cash-phase3{margin-left:44px;}
+#grow-phase2 .grow-cta-box,#exit-phase2 .exit-cta-box{margin-left:44px;}
 #cash-phase3 #c-ac-btn{display:none !important;}
 #cash-phase3 .card>.ct{display:none !important;}
 .at{font-size:13px !important;color:#374151 !important;}
