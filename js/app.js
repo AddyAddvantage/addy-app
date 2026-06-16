@@ -659,6 +659,7 @@ function renderExitActions(){
                     renderCashActions();
                     var cAcEl=document.getElementById('c-ac');
                     if(cAcEl) cAcEl._shown=true;
+                    appendFeedback(document.getElementById('cash-phase3'),'cash');
                     setTimeout(function(){
                       var ac=document.getElementById('c-ac');
                       if(ac) ac.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -778,6 +779,7 @@ function renderExitActions(){
                       renderGrowActions();
                       var gAcEl=document.getElementById('g-ac');
                       if(gAcEl) gAcEl._shown=true;
+                      appendFeedback(phase2,'grow');
                       setTimeout(function(){
                         if(gAcEl) gAcEl.scrollIntoView({behavior:'smooth',block:'nearest'});
                       },300);
@@ -958,6 +960,7 @@ function renderExitActions(){
                       renderExitActions();
                       var eAcEl=document.getElementById('e-ac');
                       if(eAcEl){eAcEl._shown=true;}
+                      appendFeedback(phase2,'exit');
                       setTimeout(function(){
                         if(eAcEl) eAcEl.scrollIntoView({behavior:'smooth',block:'nearest'});
                       },300);
@@ -1028,6 +1031,202 @@ function renderExitActions(){
     if(piSlider){piSlider.style.display='none';slidersCard.appendChild(piSlider);piSlider.value=0;}
     if(diInput){diInput.style.display='none';slidersCard.appendChild(diInput);diInput.value='-1';}
     if(typeof calcExit==='function') try{calcExit();}catch(e){}
+  }
+
+  // ============ POST-DIAGNOSTIC FEEDBACK SURVEY ============
+  // 5-question conversational survey, shown at the very end of each track.
+  // Submissions POST to the Cloudflare Worker, which stores them in D1.
+  var FB_TOTAL = 5;
+  var FB_INDUSTRIES = ['Trades & construction','Logistics & transport','Professional services','Retail & e-commerce','Manufacturing','Healthcare','Technology','Other'];
+  var FB_PMF = [
+    {v:'Very disappointed', s:'It genuinely solves something I struggle with'},
+    {v:'Somewhat disappointed', s:"It's useful but I could manage without it"},
+    {v:'Not disappointed', s:"I haven't found my 'aha' moment yet"}
+  ];
+  var FB_STANDOUT = ['Easy to understand','Saved me time','Relevant to my business','Gave me useful numbers','Unclear what to do next','Missing info I needed','Too basic for my stage','Hard to navigate'];
+  var FB_FEATURES = ['Ongoing cash flow tracking','Benchmarks vs. my industry','Advice, not just data','Accounting software integration','Exit & growth planning','Cleaner reports (for accountant or bank)'];
+
+  function fbOptButton(group, mode, value, isCard){
+    var b=el('button',{type:'button',class:isCard?'fb-card-opt':'fb-pill','data-val':value});
+    b.addEventListener('click',function(){
+      if(mode==='single'){
+        group.querySelectorAll('.selected').forEach(function(x){x.classList.remove('selected');});
+        b.classList.add('selected');
+      } else if(mode==='multi'){
+        b.classList.toggle('selected');
+      } else if(mode==='multi2'){
+        if(b.classList.contains('selected')){ b.classList.remove('selected'); }
+        else if(group.querySelectorAll('.selected').length < 2){ b.classList.add('selected'); }
+      }
+    });
+    return b;
+  }
+  function fbPills(name, mode, values){
+    var g=el('div',{class:'fb-options','data-name':name,'data-mode':mode});
+    values.forEach(function(v){ var b=fbOptButton(g,mode,v,false); b.textContent=v; g.appendChild(b); });
+    return g;
+  }
+  function fbCards(name, mode, items){
+    var g=el('div',{class:'fb-options fb-cards','data-name':name,'data-mode':mode});
+    items.forEach(function(it){
+      var b=fbOptButton(g,mode,it.v,true);
+      var t=el('div',{class:'fb-card-t'}); t.textContent=it.v; b.appendChild(t);
+      if(it.s){ var s=el('div',{class:'fb-card-s'}); s.textContent=it.s; b.appendChild(s); }
+      g.appendChild(b);
+    });
+    return g;
+  }
+
+  function buildFeedbackSurvey(track){
+    var root=el('div',{class:'fb-survey'});
+    var head=el('div',{class:'fb-head'});
+    head.appendChild(el('h2',null,['How was your experience?']));
+    head.appendChild(el('p',null,['Takes about 2 minutes. Your honest feedback shapes what we build next.']));
+    root.appendChild(head);
+
+    var prog=el('div',{class:'fb-progress'});
+    var fill=el('div',{class:'fb-progress-fill'});
+    prog.appendChild(fill); root.appendChild(prog);
+
+    function makeStep(n, title, sub){
+      var sec=el('div',{class:'fb-step'+(n===1?' active':''),'data-step':String(n)});
+      sec.appendChild(el('span',{class:'fb-kicker'},['Question '+n+' of '+FB_TOTAL]));
+      sec.appendChild(el('h3',null,[title]));
+      if(sub) sec.appendChild(el('p',{class:'fb-sub'},[sub]));
+      return sec;
+    }
+
+    var s1=makeStep(1,'What best describes your industry?','This helps us understand who benefits most from the tool.');
+    var gIndustry=fbPills('industry','single',FB_INDUSTRIES); s1.appendChild(gIndustry);
+
+    var s2=makeStep(2,'How would you feel if you could no longer use this tool?',"Be honest. This one really helps us understand where we're at.");
+    var gPmf=fbCards('pmf','single',FB_PMF); s2.appendChild(gPmf);
+
+    var s3=makeStep(3,'What stood out, good or bad?','Pick everything that resonates. Both signals matter equally to us.');
+    var gStandout=fbPills('standout','multi',FB_STANDOUT); s3.appendChild(gStandout);
+
+    var s4=makeStep(4,'What would make this a must-have for your business?','If we built a deeper version, what would matter most? Pick up to 2.');
+    var gFeatures=fbCards('features','multi2',FB_FEATURES.map(function(v){return {v:v};})); s4.appendChild(gFeatures);
+
+    var s5=makeStep(5,'Anything else on your mind?','A feature idea, a frustration, a question. Anything goes.');
+    var ta=el('textarea',{class:'fb-textarea',rows:'4',placeholder:'Share whatever is on your mind...'});
+    s5.appendChild(ta);
+    s5.appendChild(el('div',{class:'fb-divider'}));
+    var cFrame=el('div',{class:'fb-contact-frame'});
+    cFrame.appendChild(el('div',{class:'fb-contact-title'},['Want a reply? Leave your details.']));
+    cFrame.appendChild(el('div',{class:'fb-contact-sub'},["Completely optional. Only here if you'd like us to follow up on something you've shared."]));
+    s5.appendChild(cFrame);
+    var disc=el('div',{class:'fb-disclaimer'});
+    disc.appendChild(el('span',{class:'fb-shield','aria-hidden':'true'},['🛡️']));
+    disc.appendChild(el('span',null,["We won't add you to any mailing list or send unsolicited emails. Anything you share is encrypted and stored securely, never sold or shared. If you leave your details, the only reason we'd reach out is to answer a specific question you've raised here."]));
+    s5.appendChild(disc);
+    var nameLbl=el('label',{class:'fb-label'}); nameLbl.appendChild(document.createTextNode('Name ')); nameLbl.appendChild(el('span',{class:'fb-opt'},['optional'])); s5.appendChild(nameLbl);
+    var nameIn=el('input',{type:'text',class:'fb-input',placeholder:'Your name',autocomplete:'name'}); s5.appendChild(nameIn);
+    var emailLbl=el('label',{class:'fb-label'}); emailLbl.appendChild(document.createTextNode('Email ')); emailLbl.appendChild(el('span',{class:'fb-opt'},['optional'])); s5.appendChild(emailLbl);
+    var emailIn=el('input',{type:'email',class:'fb-input',placeholder:'your@email.com',autocomplete:'email'}); s5.appendChild(emailIn);
+
+    var steps=[s1,s2,s3,s4,s5];
+    var step=1;
+    function setActive(n){
+      steps[step-1].classList.remove('active');
+      step=n;
+      steps[step-1].classList.add('active');
+      fill.style.width=((step-1)/FB_TOTAL*100)+'%';
+      root.scrollIntoView({behavior:'smooth',block:'nearest'});
+    }
+    steps.forEach(function(sec,i){
+      var n=i+1;
+      var nav=el('div',{class:'fb-nav'});
+      var back=el('button',{type:'button',class:'fb-back'+(n===1?' fb-hidden':'')},['← Back']);
+      back.addEventListener('click',function(){ if(step>1) setActive(step-1); });
+      nav.appendChild(back);
+      if(n<FB_TOTAL){
+        var next=el('button',{type:'button',class:'fb-next'},['Next →']);
+        next.addEventListener('click',function(){ setActive(step+1); });
+        nav.appendChild(next);
+      } else {
+        var send=el('button',{type:'button',class:'fb-submit'},['Send feedback']);
+        send.addEventListener('click',doSubmit);
+        nav.appendChild(send);
+      }
+      sec.appendChild(nav);
+      root.appendChild(sec);
+    });
+    fill.style.width='0%';
+
+    function readGroup(g, multi){
+      var sel=[].slice.call(g.querySelectorAll('.selected')).map(function(b){ return b.getAttribute('data-val'); });
+      return multi ? sel : (sel[0] || null);
+    }
+    function collect(){
+      return {
+        track: track,
+        industry: readGroup(gIndustry,false),
+        pmf_response: readGroup(gPmf,false),
+        standout_signals: readGroup(gStandout,true),
+        desired_features: readGroup(gFeatures,true),
+        open_feedback: (ta.value||'').trim() || null,
+        name: (nameIn.value||'').trim() || null,
+        email: (emailIn.value||'').trim() || null,
+        completed_at: new Date().toISOString()
+      };
+    }
+    function doSubmit(){
+      var payload=collect();
+      fill.style.width='100%';
+      postFeedback(payload);
+      while(root.firstChild) root.removeChild(root.firstChild);
+      var ty=el('div',{class:'fb-thanks'});
+      ty.appendChild(el('div',{class:'fb-thanks-icon'},['✓']));
+      ty.appendChild(el('h2',null,['Thank you, really.']));
+      ty.appendChild(el('p',null,['Your feedback goes straight to the team and genuinely shapes what we build next.']));
+      root.appendChild(ty);
+    }
+
+    return root;
+  }
+
+  function postFeedback(payload){
+    try{
+      fetch(WORKER_URL,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({type:'feedback',data:payload})
+      }).then(function(r){ if(!r||!r.ok) console.warn('Feedback save failed:', r&&r.status); })
+        .catch(function(e){ console.warn('Feedback save error:', e&&e.message); });
+    }catch(e){ console.warn('Feedback save error:', e); }
+  }
+
+  // Append the invitation + survey to the very end of a completed track.
+  function appendFeedback(container, track){
+    if(!container) return;
+    var existing=document.getElementById('fb-'+track);
+    if(existing) existing.remove();
+    var cardId = track==='cash' ? 'cash-input-card' : (track==='grow' ? 'grow-input-card' : 'exit-input-card');
+    var mascotSrc=findMascotSrc(cardId);
+
+    var holder=el('div',{id:'fb-'+track,class:'fb-holder v2-fade-in'});
+    var chat=el('div',{class:'v2-chat'});
+    var mascot=el('div',{class:'v2-chat-mascot'});
+    if(mascotSrc) mascot.appendChild(el('img',{src:mascotSrc,alt:'Addy'}));
+    var stream=el('div',{class:'v2-chat-stream'});
+    chat.appendChild(mascot); chat.appendChild(stream);
+    var bubble=el('div',{class:'v2-bubble v2-first'});
+    bubble.appendChild(el('strong',null,['How did that go?']));
+    bubble.appendChild(el('br'));
+    bubble.appendChild(document.createTextNode('Please share your experience. It takes about 2 minutes (5 quick questions), and your answers shape what we build next.'));
+    stream.appendChild(bubble);
+    var startBtn=el('button',{type:'button',class:'v2-show-btn'},['Share my experience']);
+    stream.appendChild(startBtn);
+    holder.appendChild(chat);
+    container.appendChild(holder);
+
+    startBtn.addEventListener('click',function(){
+      startBtn.style.display='none';
+      var survey=buildFeedbackSurvey(track);
+      holder.appendChild(survey);
+      setTimeout(function(){ survey.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
+    });
   }
 
   function patch(fnName, phaseId, renderFn){

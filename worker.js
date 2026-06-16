@@ -8,7 +8,7 @@
  */
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders() });
     }
@@ -19,6 +19,21 @@ export default {
     let body;
     try { body = await request.json(); } catch {
       return new Response('Bad JSON', { status: 400 });
+    }
+
+    // ── Feedback survey submissions are stored, not calculated ──
+    if (body && body.type === 'feedback') {
+      try {
+        await saveFeedback(body.data || {}, env);
+      } catch (e) {
+        return new Response('Feedback error: ' + e.message, {
+          status: 500,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders() },
+        });
+      }
+      return new Response(JSON.stringify({ ok: true }), {
+        headers: { 'Content-Type': 'application/json', ...corsHeaders() },
+      });
     }
 
     const { goal, inputs } = body;
@@ -100,4 +115,58 @@ function calcExit({ profit = 500000, years = 8, dep = 'med', pi = 0, di = -1, no
   ];
 
   return { curVal, newVal, uplift, isDanger, currentMult, newMult, profitNew, checks, nothingSelected: nothing };
+}
+
+// ── FEEDBACK STORAGE ─────────────────────────────────────────
+// Stores post-diagnostic survey responses in a Cloudflare D1 database.
+//
+// ONE-TIME SETUP (Cloudflare dashboard — do this before deploying):
+//   1. Workers & Pages → D1 → "Create database"  (e.g. name it "addy-feedback")
+//   2. Open the database → Console, and run this SQL once:
+//
+//        CREATE TABLE IF NOT EXISTS feedback (
+//          id INTEGER PRIMARY KEY AUTOINCREMENT,
+//          track TEXT,
+//          industry TEXT,
+//          pmf_response TEXT,
+//          standout_signals TEXT,   -- JSON array
+//          desired_features TEXT,   -- JSON array
+//          open_feedback TEXT,
+//          name TEXT,
+//          email TEXT,
+//          completed_at TEXT,
+//          created_at TEXT DEFAULT (datetime('now'))
+//        );
+//
+//   3. Worker (addy-calculator) → Settings → Bindings → add a D1 binding:
+//        Variable name = DB   →   the "addy-feedback" database
+//   4. Deploy this worker.
+//
+// SECURITY: D1 is encrypted at rest by Cloudflare and is only reachable
+// through this Worker's binding — there is no public database endpoint, and
+// no credentials live in this (public) repo. We store only what the user
+// volunteers, cap field lengths defensively, and never log raw name/email.
+async function saveFeedback(d, env) {
+  if (!env || !env.DB) throw new Error('D1 binding "DB" not configured');
+  const str = (v, max) => (typeof v === 'string' && v ? v.slice(0, max) : null);
+  const arr = (v) =>
+    JSON.stringify(Array.isArray(v) ? v.slice(0, 12).map((x) => String(x).slice(0, 80)) : []);
+
+  await env.DB.prepare(
+    `INSERT INTO feedback
+       (track, industry, pmf_response, standout_signals, desired_features, open_feedback, name, email, completed_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+  )
+    .bind(
+      str(d.track, 16),
+      str(d.industry, 80),
+      str(d.pmf_response, 40),
+      arr(d.standout_signals),
+      arr(d.desired_features),
+      str(d.open_feedback, 4000),
+      str(d.name, 200),
+      str(d.email, 320),
+      str(d.completed_at, 40) || new Date().toISOString()
+    )
+    .run();
 }

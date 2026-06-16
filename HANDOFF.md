@@ -63,6 +63,13 @@ Body: `{ goal: 'cash'|'grow'|'exit', inputs: {...} }` → returns `{ result: {..
 
 App-side call pattern (`app.js`): `WORKER_URL` constant → `async function api(goal, inputs)` → `await api('cash'|'grow'|'exit', {...})`.
 
+### Feedback survey endpoint (added)
+Same Worker, different body shape: `POST /` with `{ type: 'feedback', data: {...} }` → `{ ok: true }`.
+- `data` fields: `track`, `industry`, `pmf_response`, `standout_signals[]`, `desired_features[]`, `open_feedback`, `name`, `email`, `completed_at`.
+- Stored in **Cloudflare D1** (encrypted at rest, reachable only via the Worker binding). The Worker `fetch` signature is now `fetch(request, env)` and uses `env.DB`.
+- **One-time setup required before this works in production** (see the big comment block in `worker.js`): create a D1 database, run the `CREATE TABLE feedback (...)` SQL, add a D1 binding named `DB` to the `addy-calculator` Worker, then redeploy by pasting `worker.js` into the dashboard. Until then, submissions fail gracefully (the user still sees the thank-you screen; a `console.warn` is logged).
+- Survey UI lives in `app.js` (`buildFeedbackSurvey` / `appendFeedback`, inside the v2 IIFE) and `.fb-*` styles in `styles.css`. It appears at the very end of all three tracks, after the book-a-call CTA, behind a "Share my experience" button.
+
 ## ✅ Done
 - New HTML migrated (from `addy-full (5).html`) with updated styling + corrected calculations
 - v2 conversational chat UI: chips, input summaries, red cash box
@@ -79,6 +86,11 @@ App-side call pattern (`app.js`): `WORKER_URL` constant → `async function api(
 - Design tokens expanded (added `--line`, `--muted`)
 
 ## 🔧 Still Open / Not Done
+- **Feedback survey backend not live yet** — the front-end survey is built and
+  tested, but the Worker needs the D1 setup + redeploy described above before
+  submissions are actually stored. Privacy Policy modal was updated to disclose
+  secure storage of feedback + optional name/email (review/lawyer-check the new
+  copy, esp. the analytics line, before public launch).
 - **Analytics IDs are placeholders** — `GA_ID = 'G-XXXXXXXXXX'` and
   `CLARITY_ID = 'XXXXXXXXXX'` need real values (these are client-side IDs, safe to commit)
 - **Worker CORS** still wildcard `*` — lock down before launch
