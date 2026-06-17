@@ -659,7 +659,7 @@ function renderExitActions(){
                     renderCashActions();
                     var cAcEl=document.getElementById('c-ac');
                     if(cAcEl) cAcEl._shown=true;
-                    appendFeedback(document.getElementById('cash-phase3'),'cash');
+                    appendFeedback(document.querySelector('#s-cash .results-page'),'cash');
                     setTimeout(function(){
                       var ac=document.getElementById('c-ac');
                       if(ac) ac.scrollIntoView({behavior:'smooth',block:'nearest'});
@@ -1081,7 +1081,6 @@ function renderExitActions(){
     var root=el('div',{class:'fb-survey'});
     var head=el('div',{class:'fb-head'});
     head.appendChild(el('h2',null,['How was your experience?']));
-    head.appendChild(el('p',null,['Takes about 2 minutes. Your honest feedback shapes what we build next.']));
     root.appendChild(head);
 
     var prog=el('div',{class:'fb-progress'});
@@ -1124,6 +1123,11 @@ function renderExitActions(){
     var nameIn=el('input',{type:'text',class:'fb-input',placeholder:'Your name',autocomplete:'name'}); s5.appendChild(nameIn);
     var emailLbl=el('label',{class:'fb-label'}); emailLbl.appendChild(document.createTextNode('Email ')); emailLbl.appendChild(el('span',{class:'fb-opt'},['optional'])); s5.appendChild(emailLbl);
     var emailIn=el('input',{type:'email',class:'fb-input',placeholder:'your@email.com',autocomplete:'email'}); s5.appendChild(emailIn);
+    var consentLbl=el('label',{class:'fb-consent'});
+    var consentIn=el('input',{type:'checkbox',class:'fb-consent-box'});
+    consentLbl.appendChild(consentIn);
+    consentLbl.appendChild(el('span',null,["I'm happy for Addvantage to store these details and reply to me about this feedback."]));
+    s5.appendChild(consentLbl);
 
     var steps=[s1,s2,s3,s4,s5];
     var step=1;
@@ -1168,6 +1172,7 @@ function renderExitActions(){
         open_feedback: (ta.value||'').trim() || null,
         name: (nameIn.value||'').trim() || null,
         email: (emailIn.value||'').trim() || null,
+        consent: !!consentIn.checked,
         completed_at: new Date().toISOString()
       };
     }
@@ -1211,22 +1216,31 @@ function renderExitActions(){
     if(mascotSrc) mascot.appendChild(el('img',{src:mascotSrc,alt:'Addy'}));
     var stream=el('div',{class:'v2-chat-stream'});
     chat.appendChild(mascot); chat.appendChild(stream);
-    var bubble=el('div',{class:'v2-bubble v2-first'});
-    bubble.appendChild(el('strong',null,['How did that go?']));
-    bubble.appendChild(el('br'));
-    bubble.appendChild(document.createTextNode('Please share your experience. It takes about 2 minutes (5 quick questions), and your answers shape what we build next.'));
-    stream.appendChild(bubble);
-    var startBtn=el('button',{type:'button',class:'v2-show-btn'},['Share my experience']);
-    stream.appendChild(startBtn);
     holder.appendChild(chat);
     container.appendChild(holder);
 
-    startBtn.addEventListener('click',function(){
-      startBtn.style.display='none';
-      var survey=buildFeedbackSurvey(track);
-      holder.appendChild(survey);
-      setTimeout(function(){ survey.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
-    });
+    // Show a typing indicator first, so it feels like Addy is composing the
+    // "How did that go?" message (same beat as the other chat bubbles).
+    var typing=el('div',{class:'v2-typing'});
+    typing.innerHTML='<span></span><span></span><span></span>';
+    stream.appendChild(typing);
+
+    setTimeout(function(){
+      if(typing.parentNode) typing.remove();
+      var bubble=el('div',{class:'v2-bubble v2-first v2-fade-in'});
+      bubble.appendChild(el('strong',null,['How did that go?']));
+      bubble.appendChild(el('br'));
+      bubble.appendChild(document.createTextNode('Please share your experience. It takes about 2 minutes (5 quick questions), and your answers shape what we build next.'));
+      stream.appendChild(bubble);
+      var startBtn=el('button',{type:'button',class:'v2-show-btn v2-fade-in'},['Share my experience']);
+      stream.appendChild(startBtn);
+      startBtn.addEventListener('click',function(){
+        startBtn.style.display='none';
+        var survey=buildFeedbackSurvey(track);
+        holder.appendChild(survey);
+        setTimeout(function(){ survey.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
+      });
+    },1800);
   }
 
   function patch(fnName, phaseId, renderFn){

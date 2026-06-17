@@ -134,6 +134,7 @@ function calcExit({ profit = 500000, years = 8, dep = 'med', pi = 0, di = -1, no
 //          open_feedback TEXT,
 //          name TEXT,
 //          email TEXT,
+//          consent INTEGER,       -- 1 if the user ticked the consent box
 //          completed_at TEXT,
 //          created_at TEXT DEFAULT (datetime('now'))
 //        );
@@ -154,8 +155,8 @@ async function saveFeedback(d, env) {
 
   await env.DB.prepare(
     `INSERT INTO feedback
-       (track, industry, pmf_response, standout_signals, desired_features, open_feedback, name, email, completed_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       (track, industry, pmf_response, standout_signals, desired_features, open_feedback, name, email, consent, completed_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
   )
     .bind(
       str(d.track, 16),
@@ -166,6 +167,7 @@ async function saveFeedback(d, env) {
       str(d.open_feedback, 4000),
       str(d.name, 200),
       str(d.email, 320),
+      d.consent ? 1 : 0,
       str(d.completed_at, 40) || new Date().toISOString()
     )
     .run();

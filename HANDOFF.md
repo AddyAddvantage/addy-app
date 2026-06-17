@@ -65,7 +65,7 @@ App-side call pattern (`app.js`): `WORKER_URL` constant → `async function api(
 
 ### Feedback survey endpoint (added)
 Same Worker, different body shape: `POST /` with `{ type: 'feedback', data: {...} }` → `{ ok: true }`.
-- `data` fields: `track`, `industry`, `pmf_response`, `standout_signals[]`, `desired_features[]`, `open_feedback`, `name`, `email`, `completed_at`.
+- `data` fields: `track`, `industry`, `pmf_response`, `standout_signals[]`, `desired_features[]`, `open_feedback`, `name`, `email`, `consent` (bool — optional consent checkbox), `completed_at`.
 - Stored in **Cloudflare D1** (encrypted at rest, reachable only via the Worker binding). The Worker `fetch` signature is now `fetch(request, env)` and uses `env.DB`.
 - **One-time setup required before this works in production** (see the big comment block in `worker.js`): create a D1 database, run the `CREATE TABLE feedback (...)` SQL, add a D1 binding named `DB` to the `addy-calculator` Worker, then redeploy by pasting `worker.js` into the dashboard. Until then, submissions fail gracefully (the user still sees the thank-you screen; a `console.warn` is logged).
 - Survey UI lives in `app.js` (`buildFeedbackSurvey` / `appendFeedback`, inside the v2 IIFE) and `.fb-*` styles in `styles.css`. It appears at the very end of all three tracks, after the book-a-call CTA, behind a "Share my experience" button.
