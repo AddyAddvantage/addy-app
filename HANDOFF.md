@@ -67,7 +67,7 @@ App-side call pattern (`app.js`): `WORKER_URL` constant → `async function api(
 Same Worker, different body shape: `POST /` with `{ type: 'feedback', data: {...} }` → `{ ok: true }`.
 - `data` fields: `track`, `industry`, `pmf_response`, `standout_signals[]`, `desired_features[]`, `open_feedback`, `name`, `email`, `consent` (bool — optional consent checkbox), `completed_at`.
 - Stored in **Cloudflare D1** (encrypted at rest, reachable only via the Worker binding). The Worker `fetch` signature is now `fetch(request, env)` and uses `env.DB`.
-- **One-time setup required before this works in production** (see the big comment block in `worker.js`): create a D1 database, run the `CREATE TABLE feedback (...)` SQL, add a D1 binding named `DB` to the `addy-calculator` Worker, then redeploy by pasting `worker.js` into the dashboard. Until then, submissions fail gracefully (the user still sees the thank-you screen; a `console.warn` is logged).
+- **Live as of June 2026.** D1 database created (bound as `DB` on the `addy-calculator` Worker, North American region) and the updated `worker.js` deployed; submissions are confirmed writing to the `feedback` table. The one-time setup steps remain documented in the big comment block in `worker.js` for reference / disaster recovery. If the Worker is ever unreachable, submissions still fail gracefully (user sees the thank-you screen; a `console.warn` is logged).
 - Survey UI lives in `app.js` (`buildFeedbackSurvey` / `appendFeedback`, inside the v2 IIFE) and `.fb-*` styles in `styles.css`. It appears at the very end of all three tracks, after the book-a-call CTA, behind a "Share my experience" button.
 
 ## ✅ Done
@@ -84,13 +84,14 @@ Same Worker, different body shape: `POST /` with `{ type: 'feedback', data: {...
   ring (`box-shadow: inset 0 0 0 8px`), video at 81% width, responsive down to 128px
 - Logic kept server-side; `logic.js` holds only the display formatter
 - Design tokens expanded (added `--line`, `--muted`)
+- **Post-diagnostic feedback survey** live across all three tracks — 5-question
+  conversational flow + optional contact with consent checkbox, storing to
+  Cloudflare D1 (see the feedback endpoint section above)
 
 ## 🔧 Still Open / Not Done
-- **Feedback survey backend not live yet** — the front-end survey is built and
-  tested, but the Worker needs the D1 setup + redeploy described above before
-  submissions are actually stored. Privacy Policy modal was updated to disclose
-  secure storage of feedback + optional name/email (review/lawyer-check the new
-  copy, esp. the analytics line, before public launch).
+- **Privacy Policy needs a legal review** — the modal was updated to disclose
+  secure storage of feedback + optional name/email. Have a lawyer review the new
+  copy (especially the analytics line) before public launch.
 - **Analytics IDs are placeholders** — `GA_ID = 'G-XXXXXXXXXX'` and
   `CLARITY_ID = 'XXXXXXXXXX'` need real values (these are client-side IDs, safe to commit)
 - **Worker CORS** still wildcard `*` — lock down before launch
