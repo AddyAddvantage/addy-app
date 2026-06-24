@@ -1240,7 +1240,7 @@ function renderExitActions(){
         holder.appendChild(survey);
         setTimeout(function(){ survey.scrollIntoView({behavior:'smooth',block:'nearest'}); },80);
       });
-    },1800);
+    },2600);
   }
 
   function patch(fnName, phaseId, renderFn){
